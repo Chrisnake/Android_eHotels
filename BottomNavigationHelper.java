@@ -29,9 +29,18 @@ public class BottomNavigationHelper
                         return true;
 
                     case R.id.navigation_profile:
-                        Intent ProfileIntent = new Intent(context, ProfilePage.class);
-                        context.startActivity(ProfileIntent);
-                        return true;
+                        if(ProfilePage.isLoggedIn)
+                        {
+                            Intent BookingsIntent = new Intent(context, SuccessfulProfilePage.class);
+                            context.startActivity(BookingsIntent);
+                            return true;
+                        }
+                        else
+                        {
+                            Intent ProfileIntent = new Intent(context, ProfilePage.class);
+                            context.startActivity(ProfileIntent);
+                            return true;
+                        }
                 }
                 return false;
             }

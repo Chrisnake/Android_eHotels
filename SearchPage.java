@@ -1,20 +1,23 @@
 package com.example.android.ehotelsapp;
-
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
-
+import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -23,6 +26,8 @@ public class SearchPage extends AppCompatActivity
     private Context mContext = SearchPage.this;
     private static final int ACTIVITY_NUM = 1;
     public static ArrayAdapter arrayAdapter;
+    public static String homeQuery = "";
+    protected SearchView searchView;
 
     private void setupBottomNavigation()
     {
@@ -36,7 +41,6 @@ public class SearchPage extends AppCompatActivity
     private void implementSearch()
     {
         //TODO: Replace the data below with real database data from the users bookings.
-
         ListView userBookings = findViewById(R.id.ListView);
         final ArrayList<String> hotelList = new ArrayList<>();
         hotelList.add("London Marylebone");
@@ -53,18 +57,41 @@ public class SearchPage extends AppCompatActivity
         hotelList.add("London Baker Street");
         hotelList.add("London Kensington");
         hotelList.add("London Westminister");
-
         Collections.sort(hotelList);
-        arrayAdapter = new ArrayAdapter(SearchPage.this, android.R.layout.simple_list_item_1, hotelList);
-        userBookings.setAdapter(arrayAdapter);
 
+        arrayAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, hotelList)
+        {
+            Typeface mTypeface = ResourcesCompat.getFont(getContext(), R.font.roboto_light);
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent)
+            {
+                // Cast the list view each item as text view
+                TextView item = (TextView) super.getView(position, convertView, parent);
+
+                // Set the typeface/font for the current item
+                item.setTypeface(mTypeface);
+
+                // Set the list view item's text color
+                item.setTextColor(Color.parseColor("#191919"));
+
+                // Set the item text style to bold
+                item.setTypeface(item.getTypeface(), Typeface.NORMAL);
+
+                // Change the item text size
+                item.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
+
+                // return the view
+                return item;
+            }
+        };
+
+        userBookings.setAdapter(arrayAdapter);
         userBookings.setOnItemClickListener(new AdapterView.OnItemClickListener() //Set an itemonclick listener for the list view.
         {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
             {
                 String clickedHotel = hotelList.get(i).replaceAll("\\s",""); //Taking the white space out of the hotel search name.
-                Log.d("TESTING HOTEL NAME", "HEY" + clickedHotel);
                 String packageName = "com.example.android.ehotelsapp." + clickedHotel;
                 try //Fast, efficient way to load the hotel activity that the user clicked.
                 {
@@ -92,8 +119,7 @@ public class SearchPage extends AppCompatActivity
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.search_menu, menu);
         MenuItem item = menu.findItem(R.id.SearchView);
-        SearchView searchView = (SearchView) item.getActionView();
-
+        searchView = (SearchView) item.getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener()
         {
             @Override
@@ -109,21 +135,12 @@ public class SearchPage extends AppCompatActivity
                 return false;
             }
         });
-        return super.onCreateOptionsMenu(menu);
-    }
 
-    private int hoteltoPosition(String hotelName, ArrayList<String> hotelArray)
-    {
-        int hotelPosition = -1;
-        for(int i = 0; i < hotelArray.size(); i++) //Linear search for hotel name.
+        if(!homeQuery.equals("")) //If there was an input from the homepage search bar, then set the query as that string.
         {
-            String currentHotel = hotelArray.get(i);
-            if(currentHotel.equals(hotelName))
-            {
-                hotelPosition = i;
-                break;
-            }
+            searchView.setQuery(homeQuery, true);
         }
-        return hotelPosition;
+
+        return super.onCreateOptionsMenu(menu);
     }
 }

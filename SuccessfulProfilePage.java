@@ -4,12 +4,16 @@ import android.content.Context;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -17,6 +21,9 @@ public class SuccessfulProfilePage extends AppCompatActivity
 {
     private Context mContext = SuccessfulProfilePage.this;
     private static final int ACTIVITY_NUM = 2;
+    protected TextView userName;
+    private ArrayList<String> mNames = new ArrayList<>();
+    private ArrayList<String> mImageUrls = new ArrayList<>();
 
     private void setupBottomNavigation()
     {
@@ -26,11 +33,45 @@ public class SuccessfulProfilePage extends AppCompatActivity
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_successful_profile_page);
         setupBottomNavigation();
+        initImageBitmaps();
+
+    }
+    private void initImageBitmaps()
+    {
+        mImageUrls.add("https://media-cdn.tripadvisor.com/media/photo-s/06/4b/0b/d9/london-bridge-hotel.jpg");
+        mNames.add("London Marylebone");
+        mImageUrls.add("https://doubletree3.hilton.com/resources/media/dt/LONLKDI/en_US/img/shared/full_page_image_gallery/main/HL_exterior_677x380_FitToBoxSmallDimension_Center.jpg");
+        mNames.add("London Paddington");
+        mImageUrls.add("https://doubletree3.hilton.com/resources/media/dt/LONLKDI/en_US/img/shared/full_page_image_gallery/main/HL_exterior_677x380_FitToBoxSmallDimension_Center.jpg");
+        mNames.add("London Paddington");
+        mImageUrls.add("https://i.redd.it/j6myfqglup501.jpg");
+        mNames.add("Rocky Mountain National Park");
+        mImageUrls.add("https://i.redd.it/0h2gm1ix6p501.jpg");
+        mNames.add("Mahahual");
+        mImageUrls.add("https://i.redd.it/k98uzl68eh501.jpg");
+        mNames.add("Frozen Lake");
+        mImageUrls.add("https://i.redd.it/glin0nwndo501.jpg");
+        mNames.add("White Sands Desert");
+        mImageUrls.add("https://i.redd.it/obx4zydshg601.jpg");
+        mNames.add("Austrailia");
+        mImageUrls.add("https://i.imgur.com/ZcLLrkY.jpg");
+        mNames.add("Washington");
+
+        initRecyclerView();
+    }
+
+    private void initRecyclerView()
+    {
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
+        RecyclerViewAdapter adapter = new RecyclerViewAdapter(this, mNames, mImageUrls);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 }
