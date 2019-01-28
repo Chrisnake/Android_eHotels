@@ -22,9 +22,9 @@ import java.util.HashMap;
 
 public class SIgnUpPage extends AppCompatActivity
 {
-
     private Context mContext = SIgnUpPage.this;
     private static final int ACTIVITY_NUM = 2;
+    public static String getuserKey;
 
     private void setupBottomNavigation()
     {
@@ -64,17 +64,21 @@ public class SIgnUpPage extends AppCompatActivity
                 }
                 else
                 {
-                    HashMap<String, String> userData = new HashMap<String, String>(); //Putting data in a hashmap with key and values.
-                    userData.put("userName", userName.getText().toString().trim());
-                    userData.put("userEmail", userEmail.getText().toString().trim());
-                    userData.put("userPassword", userPassword.getText().toString().trim());
-                    ref.push().setValue(userData).addOnCompleteListener(new OnCompleteListener<Void>()  //Pushing the data with respect to oncompletelistener for errors.
+                    String key = ref.push().getKey(); //Obtaining key with empty data push.
+                    getuserKey = key;
+                    UserDetails newUser = new UserDetails(); //Creating new user with object.
+                    newUser.setUserEmail(userName.getText().toString().trim());
+                    newUser.setUserID(key);
+                    newUser.setUserName(userName.getText().toString().trim());
+                    newUser.setUserPassword(userPassword.getText().toString().trim());
+                    ref.child(key).setValue(newUser).addOnCompleteListener(new OnCompleteListener<Void>()  //Pushing the data with respect to oncompletelistener for errors.
                     {
                         @Override
                         public void onComplete(@NonNull Task<Void> task)
                         {
                             if(task.isSuccessful())
                             {
+                                ProfilePage.getUserEmail = userEmail.getText().toString();
                                 ProfilePage.isLoggedIn = true;
                             }
                             else

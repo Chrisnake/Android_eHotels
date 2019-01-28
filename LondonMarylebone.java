@@ -40,7 +40,7 @@ public class LondonMarylebone extends AppCompatActivity
     protected DatePickerDialog.OnDateSetListener dateSetListener_out;
     protected int dateIn, dateOut, monthIn, monthOut;
     protected int basePrice = 0;
-    public String hotel = "Hotel: London Marylebone";
+    public String hotel = "London Marylebone";
     public String room = "";
     public String finalCheckIn = "";
     public String finalCheckOut = "";
@@ -114,7 +114,7 @@ public class LondonMarylebone extends AppCompatActivity
                 if(displayInDate != null) //If the user has inputted a check in date.
                 {
                     daysDifference = dateOut - dateIn;
-                    Price = Price * daysDifference;
+                    Price *= daysDifference;
                     priceView.setText("£" + Price);
                     Animation animation = AnimationUtils.loadAnimation(LondonMarylebone.this, R.anim.fadein);
                     priceView.setAnimation(animation);
@@ -176,9 +176,9 @@ public class LondonMarylebone extends AppCompatActivity
                     Intent ConfirmIntent = new Intent(LondonMarylebone.this, ConfirmBookingPage.class);
                     ConfirmIntent.putExtra("Hotel", hotel);
                     ConfirmIntent.putExtra("Room", room);
-                    ConfirmIntent.putExtra("CheckIn", "Check In: " + finalCheckIn);
-                    ConfirmIntent.putExtra("CheckOut", "Check Out: " + finalCheckOut);
-                    ConfirmIntent.putExtra("Price", "£" + Price);
+                    ConfirmIntent.putExtra("CheckIn",  finalCheckIn);
+                    ConfirmIntent.putExtra("CheckOut", finalCheckOut);
+                    ConfirmIntent.putExtra("Price",  "£" + Price);
                     startActivity(ConfirmIntent);
                 }
                 else
@@ -250,19 +250,19 @@ public class LondonMarylebone extends AppCompatActivity
                 switch(i)
                 {
                     case 0: basePrice = 30; //Single Room Base Price
-                        room = "Room: Single Room";
+                        room = "Single Room";
                         break;
                     case 1: basePrice = 60; //Single Room Base Price
-                        room = "Room: Double Room";
+                        room = "Double Room";
                         break;
                     case 2: basePrice = 80; //Family Room Base Price
-                        room = "Room: Family Room";
+                        room = "Family Room";
                         break;
                     case 3: basePrice = 120; //Large Family Room Base Price
-                        room = "Room: Large Family Room";
+                        room = "Large Family Room";
                         break;
                     case 4: basePrice = 120; //Couple Duplex Room Base Price
-                        room = "Room: Couple Duplex Room";
+                        room = "Couple Duplex Room";
                         break;
                 }
             }

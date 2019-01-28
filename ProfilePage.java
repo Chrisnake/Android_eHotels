@@ -27,6 +27,7 @@ public class ProfilePage extends AppCompatActivity
     private EditText userPassword;
     public static boolean isLoggedIn;
     public static String userName;
+    public static String getUserEmail;
 
     private void setupBottomNavigation()
     {
@@ -82,7 +83,7 @@ public class ProfilePage extends AppCompatActivity
                                 if (userPassword.getText().toString().equals(user.child("userPassword").getValue().toString())) //Finds user password fields and checks to see if match.
                                 {
                                     isLoggedIn = true;
-                                    userName = user.child("userName").getValue().toString();
+                                    getUserEmail = userEmail.getText().toString();
                                     Intent LoginIntent = new Intent(ProfilePage.this, SuccessfulProfilePage.class);
                                     startActivity(LoginIntent);
                                 }
@@ -105,8 +106,5 @@ public class ProfilePage extends AppCompatActivity
                 });
             }
         });
-
-
-
     }
 }
