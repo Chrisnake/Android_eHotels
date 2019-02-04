@@ -67,7 +67,7 @@ public class SIgnUpPage extends AppCompatActivity
                     String key = ref.push().getKey(); //Obtaining key with empty data push.
                     getuserKey = key;
                     UserDetails newUser = new UserDetails(); //Creating new user with object.
-                    newUser.setUserEmail(userName.getText().toString().trim());
+                    newUser.setUserEmail(userEmail.getText().toString().trim());
                     newUser.setUserID(key);
                     newUser.setUserName(userName.getText().toString().trim());
                     newUser.setUserPassword(userPassword.getText().toString().trim());

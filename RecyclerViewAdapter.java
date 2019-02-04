@@ -58,7 +58,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             @Override
             public void onClick(View view)
             {
-
+                Toast.makeText(mContext, mImageNames.get(position), Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(mContext, BookingPage.class);
+                intent.putExtra("image_url", mImages.get(position));
+                intent.putExtra("image_name", mImageNames.get(position));
+                intent.putExtra("booking_in", SuccessfulProfilePage.bookingsList.get(position).getDateIn());
+                intent.putExtra("booking_out", SuccessfulProfilePage.bookingsList.get(position).getDateOut());
+                mContext.startActivity(intent);
             }
         });
     }

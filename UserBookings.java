@@ -9,9 +9,14 @@ public class UserBookings
     private String dateOut;
     private String roomType;
 
-    public UserBookings()
+    public UserBookings(String id, String userHotel, String userPrice, String userIn, String userOut, String userRoom)
     {
-
+        userID = id;
+        hotel = userHotel;
+        price = userPrice;
+        dateIn = userIn;
+        dateOut = userOut;
+        roomType = userRoom;
     }
     public String getUserID()
     {
@@ -60,5 +65,9 @@ public class UserBookings
 
     public void setRoomType(String roomType) {
         this.roomType = roomType;
+    }
+
+    public static void print()
+    {
     }
 }
