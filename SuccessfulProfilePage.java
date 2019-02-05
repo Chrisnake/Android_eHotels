@@ -88,19 +88,12 @@ public class SuccessfulProfilePage extends AppCompatActivity
                     String roomType = (String) datas.child("roomType").getValue();
 
                     UserBookings userBookings = new UserBookings(userKey, hotel, price, dateIn, dateOut, roomType);
-
-                    Log.i("List test", "ID:  " + userBookings.getUserID());
-                    Log.i("List test", "Hotel:  " + userBookings.getHotel());
-                    Log.i("List test", "Price: " + userBookings.getPrice());
-                    Log.i("List test", "Date In: " + userBookings.getDateIn());
-                    Log.i("List test", "Date Out: " + userBookings.getDateOut());
-                    Log.i("List test", "Room Type: " + userBookings.getRoomType());
                     bookingsList.add(userBookings);
 
                     //TODO: Find a way to use link an image to the hotel depending on its name.
 
-                    mImageUrls.add("https://media-cdn.tripadvisor.com/media/photo-s/06/4b/0b/d9/london-bridge-hotel.jpg");
                     mNames.add(userBookings.getHotel());
+                    mImageUrls.add(HashMapImages().get(userBookings.getHotel())); //Using hashmap where the key is the hotel name.
                 }
 
                 initRecyclerView();
@@ -148,5 +141,13 @@ public class SuccessfulProfilePage extends AppCompatActivity
     public interface MyCallback
     {
         void onCallback(String userKey);
+    }
+
+    protected HashMap<String, String> HashMapImages() //Creates a hashmap of images where the key is the hotel name and the value is the hotel image link.
+    {
+        HashMap<String,String> imageMap = new HashMap<>();
+        imageMap.put("London Marylebone", "https://media-cdn.tripadvisor.com/media/photo-s/06/4b/0b/d9/london-bridge-hotel.jpg");
+        imageMap.put("London Picadilly", "https://t-ec.bstatic.com/images/hotel/max1024x768/413/41353407.jpg");
+        return imageMap;
     }
 }

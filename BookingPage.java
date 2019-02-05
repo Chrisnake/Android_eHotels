@@ -1,12 +1,19 @@
 package com.example.android.ehotelsapp;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.Calendar;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
@@ -17,16 +24,33 @@ import java.util.Random;
 
 public class BookingPage extends AppCompatActivity
 {
+    private Context mContext = BookingPage.this;
+    private static final int ACTIVITY_NUM = 2;
+    protected int totalDays;
+    protected int daysLeft;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bookings);
-        getIncomingIntent();
-        getBooking();
+        setupBottomNavigation();
+        String bookingIn = getIntent().getStringExtra("booking_in");
+        String bookingOut = getIntent().getStringExtra("booking_out");
+        getIncomingIntent(bookingIn, bookingOut);
+        progressBar(bookingIn, bookingOut);
     }
 
-    private void getIncomingIntent()
+    private void setupBottomNavigation()
+    {
+        BottomNavigationView bottomNavigationView = findViewById(R.id.navigation);
+        BottomNavigationHelper.enableNavigation(mContext, bottomNavigationView); //Enable the logic of the navigation bar.
+        Menu menu = bottomNavigationView.getMenu();
+        MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
+        menuItem.setChecked(true);
+    }
+
+    private void getIncomingIntent(String bookingIn, String bookingOut)
     {
         Random rand = new Random();
         int qrID = rand.nextInt(10000) + 1; //Generate a random QRID for the QR code.
@@ -37,8 +61,6 @@ public class BookingPage extends AppCompatActivity
         if(getIntent().hasExtra("image_name"))
         {
             String imageName = getIntent().getStringExtra("image_name");
-            String bookingIn = getIntent().getStringExtra("booking_in");
-            String bookingOut = getIntent().getStringExtra("booking_out");
             textIn.setText("Check In: " + bookingIn);
             textOut.setText("Check Out: " + bookingOut);
             textHotel.setText(imageName);
@@ -56,11 +78,25 @@ public class BookingPage extends AppCompatActivity
         }
     }
 
-    protected void getBooking()
+    protected void progressBar(String bookingIn, String bookingOut)
     {
-        for(UserBookings bookings : SuccessfulProfilePage.bookingsList)
+        int checkIn = Integer.parseInt(bookingIn.substring(0,1)); //Converting string bookingIn to primitive int.
+        int checkOut = Integer.parseInt(bookingOut.substring(0,1)); //Converting string bookingIn to primitive int.
+        TextView activeText = findViewById(R.id.activeText);
+        totalDays = checkOut - checkIn; //Number of days
+        daysLeft = checkOut - Calendar.getInstance().get(Calendar.DAY_OF_MONTH); //Days left = check out day (27th) - current day (25th) = 2
+
+        if(daysLeft <= 0) //If the days are less than 0 then this booking is no longer available.
         {
-            Log.i("BookingPage", bookings.getHotel());
+            activeText.setText("Booking Finished");
+        }
+        else
+        {
+            Toast.makeText(BookingPage.this, daysLeft + "daysLeft", Toast.LENGTH_SHORT).show();
+            ProgressBar progressBar = findViewById(R.id.progressBar);
+            progressBar.setMax(totalDays);
+            progressBar.setProgress(daysLeft);
+
         }
     }
 
