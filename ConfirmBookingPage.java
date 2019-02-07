@@ -28,6 +28,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
+import java.util.Random;
 
 public class ConfirmBookingPage extends AppCompatActivity
 {
@@ -79,6 +80,8 @@ public class ConfirmBookingPage extends AppCompatActivity
 
     protected void confirmDetails()
     {
+        Random rand = new Random();
+        final String qrID = String.valueOf(rand.nextInt(100000) + 1); //Generate a random QRID for the QR code.
         final FirebaseDatabase database = FirebaseDatabase.getInstance(); //Connecting firebase to confirm activity.
         final DatabaseReference ref = database.getReference("Bookings");
         Button confirm = findViewById(R.id.confirmButton);
@@ -94,6 +97,7 @@ public class ConfirmBookingPage extends AppCompatActivity
                 bookingsData.put("dateIn", inConfirm);
                 bookingsData.put("dateOut", outConfirm);
                 bookingsData.put("Price", priceConfirm);
+                bookingsData.put("idQR", qrID);
                 ref.push().setValue(bookingsData).addOnCompleteListener(new OnCompleteListener<Void>()  //Pushing the data with respect to oncompletelistener for errors.
                 {
                     @Override
@@ -110,6 +114,7 @@ public class ConfirmBookingPage extends AppCompatActivity
                     }
                 });
                 Intent ConfirmIntent = new Intent(ConfirmBookingPage.this, BookingConfirmedPage.class);
+                ConfirmIntent.putExtra("hotel_name", hotelConfirm);
                 startActivity(ConfirmIntent);
             }
         });

@@ -12,15 +12,12 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.util.Calendar;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
-
-import java.util.Random;
 
 public class BookingPage extends AppCompatActivity
 {
@@ -37,7 +34,8 @@ public class BookingPage extends AppCompatActivity
         setupBottomNavigation();
         String bookingIn = getIntent().getStringExtra("booking_in");
         String bookingOut = getIntent().getStringExtra("booking_out");
-        getIncomingIntent(bookingIn, bookingOut);
+        String QRID = getIntent().getStringExtra("booking_qr");
+        getIncomingIntent(bookingIn, bookingOut, QRID);
         progressBar(bookingIn, bookingOut);
     }
 
@@ -50,10 +48,8 @@ public class BookingPage extends AppCompatActivity
         menuItem.setChecked(true);
     }
 
-    private void getIncomingIntent(String bookingIn, String bookingOut)
+    private void getIncomingIntent(String bookingIn, String bookingOut, String bookingQR)
     {
-        Random rand = new Random();
-        int qrID = rand.nextInt(10000) + 1; //Generate a random QRID for the QR code.
         TextView textIn = findViewById(R.id.CheckIn);
         TextView textOut = findViewById(R.id.CheckOut);
         TextView textHotel = findViewById(R.id.Hotel);
@@ -69,7 +65,7 @@ public class BookingPage extends AppCompatActivity
             MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
             try
             {
-                BitMatrix bitMatrix = multiFormatWriter.encode(String.valueOf(qrID), BarcodeFormat.QR_CODE, 500,500);
+                BitMatrix bitMatrix = multiFormatWriter.encode(String.valueOf(bookingQR), BarcodeFormat.QR_CODE, 500,500);
                 BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
                 Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
                 QR.setImageBitmap(bitmap);
@@ -99,6 +95,5 @@ public class BookingPage extends AppCompatActivity
 
         }
     }
-
 }
 

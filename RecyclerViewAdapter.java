@@ -61,6 +61,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 intent.putExtra("image_name", mImageNames.get(position));
                 intent.putExtra("booking_in", SuccessfulProfilePage.bookingsList.get(position).getDateIn());
                 intent.putExtra("booking_out", SuccessfulProfilePage.bookingsList.get(position).getDateOut());
+                intent.putExtra("booking_qr", SuccessfulProfilePage.bookingsList.get(position).getIdQR());
                 mContext.startActivity(intent);
             }
         });

@@ -8,15 +8,18 @@ public class UserBookings
     private String dateIn;
     private String dateOut;
     private String roomType;
+    private String idQR;
 
-    public UserBookings(String id, String userHotel, String userPrice, String userIn, String userOut, String userRoom)
+    public UserBookings(String id, String userHotel, String userPrice, String userIn, String userOut, String userRoom, String userQR)
     {
         userID = id;
         hotel = userHotel;
         price = userPrice;
         dateIn = userIn;
+
         dateOut = userOut;
         roomType = userRoom;
+        idQR = userQR;
     }
     public String getUserID()
     {
@@ -67,7 +70,11 @@ public class UserBookings
         this.roomType = roomType;
     }
 
-    public static void print()
-    {
+    public String getIdQR() {
+        return idQR;
+    }
+
+    public void setIdQR(String idQR) {
+        this.idQR = idQR;
     }
 }

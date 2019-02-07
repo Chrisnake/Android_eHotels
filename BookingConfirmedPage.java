@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 public class BookingConfirmedPage extends AppCompatActivity
 {
@@ -15,6 +16,9 @@ public class BookingConfirmedPage extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_booking_confirmed_page);
+        TextView hotelText = findViewById(R.id.hotelSuccessTitle);
+        hotelText.setText(getIntent().getStringExtra("hotel_name"));
+
         animation();
         Handler mHandler = new Handler();
         mHandler.postDelayed(new Runnable()
@@ -27,6 +31,7 @@ public class BookingConfirmedPage extends AppCompatActivity
             }
 
         }, 2900L);
+
     }
 
     protected void animation()

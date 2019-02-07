@@ -6,6 +6,8 @@ public class UserDetails
     private String userName;
     private String userEmail;
     private String userPassword;
+    private String userQRID;
+
 
     public UserDetails()
     {
@@ -42,5 +44,15 @@ public class UserDetails
 
     public void setUserPassword(String userPassword) {
         this.userPassword = userPassword;
+    }
+
+    public String getUserQRid()
+    {
+        return userQRID;
+    }
+
+    public void setUserQRid(String userQRid)
+    {
+        this.userQRID = userQRid;
     }
 }

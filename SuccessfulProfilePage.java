@@ -40,7 +40,7 @@ public class SuccessfulProfilePage extends AppCompatActivity
     private ArrayList<String> mNames = new ArrayList<>();
     private ArrayList<String> mImageUrls = new ArrayList<>();
     public static ArrayList<UserBookings> bookingsList = new ArrayList<>();
-    protected String userKey;
+    public static String userKey;
 
     private void setupBottomNavigation()
     {
@@ -64,8 +64,6 @@ public class SuccessfulProfilePage extends AppCompatActivity
             {
                 userKey = value;
                 findBookings(value);
-                Log.i("List test", "Value:  " + value);
-                Log.i("List test", "userKey:  " + value);
             }
         });
 
@@ -86,11 +84,9 @@ public class SuccessfulProfilePage extends AppCompatActivity
                     String dateIn = (String) datas.child("dateIn").getValue();
                     String dateOut = (String) datas.child("dateOut").getValue();
                     String roomType = (String) datas.child("roomType").getValue();
-
-                    UserBookings userBookings = new UserBookings(userKey, hotel, price, dateIn, dateOut, roomType);
+                    String qrID = (String) datas.child("qrID").getValue();
+                    UserBookings userBookings = new UserBookings(userKey, hotel, price, dateIn, dateOut, roomType, qrID);
                     bookingsList.add(userBookings);
-
-                    //TODO: Find a way to use link an image to the hotel depending on its name.
 
                     mNames.add(userBookings.getHotel());
                     mImageUrls.add(HashMapImages().get(userBookings.getHotel())); //Using hashmap where the key is the hotel name.
@@ -145,7 +141,7 @@ public class SuccessfulProfilePage extends AppCompatActivity
 
     protected HashMap<String, String> HashMapImages() //Creates a hashmap of images where the key is the hotel name and the value is the hotel image link.
     {
-        HashMap<String,String> imageMap = new HashMap<>();
+        HashMap<String,String> imageMap = new HashMap<>(); //TODO: Add a new hash to hashmap for new hotel.
         imageMap.put("London Marylebone", "https://media-cdn.tripadvisor.com/media/photo-s/06/4b/0b/d9/london-bridge-hotel.jpg");
         imageMap.put("London Picadilly", "https://t-ec.bstatic.com/images/hotel/max1024x768/413/41353407.jpg");
         return imageMap;
