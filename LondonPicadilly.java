@@ -25,9 +25,10 @@ import android.widget.DatePicker;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import me.relex.circleindicator.CircleIndicator;
 
@@ -49,7 +50,7 @@ public class LondonPicadilly extends AppCompatActivity
     protected int Price = 20;
     protected ViewPager viewpager;
     protected ViewPagerAdapter viewPagerAdapter;
-    private Integer[] hotelImages = {R.drawable.london_picadilly_bedroom, R.drawable.london_picadilly_kitchen, R.drawable.london_picadilly_toilet}; //TODO: Change this for images.
+    private Integer[] hotelImages = {R.drawable.london_picadilly_kitchen, R.drawable.london_picadilly_bedroom, R.drawable.london_picadilly_toilet}; //TODO: Change this for images.
     private ArrayList<Integer> imagesArray = new ArrayList<Integer>();
 
 
@@ -90,8 +91,12 @@ public class LondonPicadilly extends AppCompatActivity
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day)
             {
+                DecimalFormat dateFormat = new DecimalFormat("00");
                 month = month + 1; //January starts at 0.
-                String date = day + "/" + month + "/" + year;
+                String returnMonth = dateFormat.format(month); //Change format to DD, and make month a string.
+                String returnDay = dateFormat.format(day);
+                String date = returnDay + "/" + returnMonth + "/" + year;
+
                 displayInDate.setText(date);
                 finalCheckIn = date;
                 dateIn = day;
@@ -104,12 +109,16 @@ public class LondonPicadilly extends AppCompatActivity
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day)
             {
-                Price = basePrice;
+                Price = basePrice; //Update the price.
                 int daysDifference;
                 month = month + 1; //January starts at 0.
-                String date = day + "/" + month + "/" + year;
-                finalCheckOut = date;
                 monthOut = month;
+
+                DecimalFormat dateFormat = new DecimalFormat("00");
+                String returnMonth = dateFormat.format(month); //Change format to DD, and make month a string.
+                String returnDay = dateFormat.format(day);
+                String date = returnDay + "/" + returnMonth + "/" + year;
+                finalCheckOut = date;
                 displayOutDate.setText(date);
 
                 dateOut = day;
@@ -165,12 +174,17 @@ public class LondonPicadilly extends AppCompatActivity
             {
                 if(!ProfilePage.isLoggedIn)
                 {
-                    Toast toast = Toast.makeText(getApplicationContext(),"Please create an account or log in before you book a room.", Toast.LENGTH_LONG);
+                    Toast toast = Toast.makeText(getApplicationContext(),"Error: Please create an account or log in before you book a room.", Toast.LENGTH_LONG);
                     toast.show();
                 }
                 else if(dateIn >= dateOut)
                 {
-                    Toast toast = Toast.makeText(getApplicationContext(),"Please check out atleast one day after you check in.", Toast.LENGTH_LONG);
+                    Toast toast = Toast.makeText(getApplicationContext(),"Error: Please check out atleast one day after you check in.", Toast.LENGTH_LONG);
+                    toast.show();
+                }
+                else if(dateIn <= GregorianCalendar.getInstance().get(Calendar.DAY_OF_MONTH) || monthIn < GregorianCalendar.getInstance().get(Calendar.MONTH))
+                {
+                    Toast toast = Toast.makeText(getApplicationContext(),"Error: Please check in after today's date.", Toast.LENGTH_LONG);
                     toast.show();
                 }
                 else if(!room.equals("") && !finalCheckIn.equals("") && !finalCheckOut.equals("")) //Error handling for users that press book without any acceptable details.
@@ -185,7 +199,7 @@ public class LondonPicadilly extends AppCompatActivity
                 }
                 else
                 {
-                    Toast toast = Toast.makeText(getApplicationContext(),"Please select the room type, check in date and check out date before booking.", Toast.LENGTH_LONG);
+                    Toast toast = Toast.makeText(getApplicationContext(),"Error: Please fill in all the fields before you confirm.", Toast.LENGTH_LONG);
                     toast.show();
                 }
             }
@@ -211,11 +225,11 @@ public class LondonPicadilly extends AppCompatActivity
     {
         //Arraylist containing the room types available for the hotel.
         final ArrayList<String> hotelList = new ArrayList<>();
-        hotelList.add("    Single Room - 1 Adult");
-        hotelList.add("    Double Room - 2 Adults");
-        hotelList.add("    Family Room - 2 Adults, 2 Children");
-        hotelList.add("    Large Family Room - 3 Adults, 3 Children");
-        hotelList.add("    Couple Duplex - 2 Adults");
+        hotelList.add("Single Room");
+        hotelList.add("Double Room");
+        hotelList.add("Family Room");
+        hotelList.add("Large Family Room");
+        hotelList.add("Couple Duplex Room");
 
         // Initialize an array adapter
         arrayAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, hotelList)
@@ -224,22 +238,12 @@ public class LondonPicadilly extends AppCompatActivity
             @Override
             public View getView(int position, View convertView, ViewGroup parent)
             {
-                // Cast the list view each item as text view
                 TextView item = (TextView) super.getView(position, convertView, parent);
-
-                // Set the typeface/font for the current item
                 item.setTypeface(mTypeface);
-
-                // Set the list view item's text color
                 item.setTextColor(Color.parseColor("#191919"));
-
-                // Set the item text style to bold
                 item.setTypeface(item.getTypeface(), Typeface.NORMAL);
-
-                // Change the item text size
                 item.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-
-                // return the view
+                item.setPadding(80,0,0,0);
                 return item;
             }
         };

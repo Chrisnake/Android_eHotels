@@ -11,6 +11,7 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,8 +26,19 @@ import android.widget.DatePicker;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 import me.relex.circleindicator.CircleIndicator;
 
 public class LondonMarylebone extends AppCompatActivity
@@ -49,6 +61,7 @@ public class LondonMarylebone extends AppCompatActivity
     protected ViewPagerAdapter viewPagerAdapter;
     private Integer[] hotelImages = {R.drawable.london_marylebone_kitchen, R.drawable.london_marylebone, R.drawable.london_marylebone_lobby};
     private ArrayList<Integer> imagesArray = new ArrayList<Integer>();
+    protected boolean bookingValid = true;
 
 
     private void setupBottomNavigation()
@@ -88,8 +101,12 @@ public class LondonMarylebone extends AppCompatActivity
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day)
             {
+                DecimalFormat dateFormat = new DecimalFormat("00");
                 month = month + 1; //January starts at 0.
-                String date = day + "/" + month + "/" + year;
+                String returnMonth = dateFormat.format(month); //Change format to DD, and make month a string.
+                String returnDay = dateFormat.format(day);
+                String date = returnDay + "/" + returnMonth + "/" + year;
+
                 displayInDate.setText(date);
                 finalCheckIn = date;
                 dateIn = day;
@@ -105,9 +122,13 @@ public class LondonMarylebone extends AppCompatActivity
                 Price = basePrice;
                 int daysDifference;
                 month = month + 1; //January starts at 0.
-                String date = day + "/" + month + "/" + year;
-                finalCheckOut = date;
                 monthOut = month;
+
+                DecimalFormat dateFormat = new DecimalFormat("00");
+                String returnMonth = dateFormat.format(month); //Change format to DD, and make month a string.
+                String returnDay = dateFormat.format(day);
+                String date = returnDay + "/" + returnMonth + "/" + year;
+                finalCheckOut = date;
                 displayOutDate.setText(date);
 
                 dateOut = day;
@@ -163,12 +184,22 @@ public class LondonMarylebone extends AppCompatActivity
             {
                 if(!ProfilePage.isLoggedIn)
                 {
-                    Toast toast = Toast.makeText(getApplicationContext(),"Please create an account or log in before you book a room.", Toast.LENGTH_LONG);
+                    Toast toast = Toast.makeText(getApplicationContext(),"Error: Please create an account or log in before you book a room.", Toast.LENGTH_LONG);
+                    toast.show();
+                }
+                else if(!bookingValid)
+                {
+                    Toast toast = Toast.makeText(getApplicationContext(),"Error: There are no more availabilities for that room.", Toast.LENGTH_LONG);
                     toast.show();
                 }
                 else if(dateIn >= dateOut)
                 {
-                    Toast toast = Toast.makeText(getApplicationContext(),"Please check out atleast one day after you check in.", Toast.LENGTH_LONG);
+                    Toast toast = Toast.makeText(getApplicationContext(),"Error: Please check out at least one day after you check in.", Toast.LENGTH_LONG);
+                    toast.show();
+                }
+                else if(dateIn <= GregorianCalendar.getInstance().get(Calendar.DAY_OF_MONTH) || monthIn < GregorianCalendar.getInstance().get(Calendar.MONTH))
+                {
+                    Toast toast = Toast.makeText(getApplicationContext(),"Error: Please check in after today's date.", Toast.LENGTH_LONG);
                     toast.show();
                 }
                 else if(!room.equals("") && !finalCheckIn.equals("") && !finalCheckOut.equals("")) //Error handling for users that press book without any acceptable details.
@@ -183,7 +214,7 @@ public class LondonMarylebone extends AppCompatActivity
                 }
                 else
                 {
-                    Toast toast = Toast.makeText(getApplicationContext(),"Please select the room type, check in date and check out date before booking.", Toast.LENGTH_LONG);
+                    Toast toast = Toast.makeText(getApplicationContext(),"Error: Please fill in all the fields before you confirm", Toast.LENGTH_LONG);
                     toast.show();
                 }
             }
@@ -209,11 +240,11 @@ public class LondonMarylebone extends AppCompatActivity
     {
         //Arraylist containing the room types available for the hotel.
         final ArrayList<String> hotelList = new ArrayList<>();
-        hotelList.add("    Single Room - 1 Adult");
-        hotelList.add("    Double Room - 2 Adults");
-        hotelList.add("    Family Room - 2 Adults, 2 Children");
-        hotelList.add("    Large Family Room - 3 Adults, 3 Children");
-        hotelList.add("    Couple Duplex - 2 Adults");
+        hotelList.add("Single Room");
+        hotelList.add("Double Room");
+        hotelList.add("Family Room");
+        hotelList.add("Large Family Room");
+        hotelList.add("Couple Duplex");
 
         // Initialize an array adapter
         arrayAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, hotelList)
@@ -222,22 +253,12 @@ public class LondonMarylebone extends AppCompatActivity
             @Override
             public View getView(int position, View convertView, ViewGroup parent)
             {
-                // Cast the list view each item as text view
                 TextView item = (TextView) super.getView(position, convertView, parent);
-
-                // Set the typeface/font for the current item
                 item.setTypeface(mTypeface);
-
-                // Set the list view item's text color
                 item.setTextColor(Color.parseColor("#191919"));
-
-                // Set the item text style to bold
                 item.setTypeface(item.getTypeface(), Typeface.NORMAL);
-
-                // Change the item text size
                 item.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-
-                // return the view
+                item.setPadding(80,0,0,0);
                 return item;
             }
         };
@@ -251,20 +272,56 @@ public class LondonMarylebone extends AppCompatActivity
                 {
                     case 0: basePrice = 30; //Single Room Base Price
                         room = "Single Room";
+                        roomAvailabilities("Single Rooms");
                         break;
                     case 1: basePrice = 60; //Single Room Base Price
                         room = "Double Room";
+                        roomAvailabilities("Double Rooms");
                         break;
                     case 2: basePrice = 80; //Family Room Base Price
                         room = "Family Room";
+                        roomAvailabilities("Family Rooms");
                         break;
                     case 3: basePrice = 120; //Large Family Room Base Price
                         room = "Large Family Room";
+                        roomAvailabilities("Large Family Rooms");
                         break;
                     case 4: basePrice = 120; //Couple Duplex Room Base Price
-                        room = "Couple Duplex Room";
+                        room = "Couple Duplex Rooms";
+                        roomAvailabilities("Couple Duplex Rooms");
                         break;
                 }
+            }
+        });
+    }
+
+    protected void roomAvailabilities(final String userRoom) //Check firebase Hotels child for hotel room availabilities depending on the hotel the user has clicked. Parameter input is user room that they chose.
+    {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        Query key = reference.child("Hotels").child("London Marylebone").child(userRoom);
+        key.addListenerForSingleValueEvent(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                if(dataSnapshot.getValue().toString().equals("0"))
+                {
+                    Toast toast = Toast.makeText(getApplicationContext(),"Sorry, there are no more " + userRoom + " Available.", Toast.LENGTH_LONG);
+                    bookingValid = false;
+                    toast.show();
+                }
+                else
+                {
+                    bookingValid = true;
+                    String roomAvailability = dataSnapshot.getValue().toString() + " " + userRoom + " Available.";
+                    Toast toast = Toast.makeText(getApplicationContext(),roomAvailability, Toast.LENGTH_LONG);
+                    toast.show();
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError)
+            {
+
             }
         });
     }

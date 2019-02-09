@@ -76,8 +76,8 @@ public class BookingPage extends AppCompatActivity
 
     protected void progressBar(String bookingIn, String bookingOut)
     {
-        int checkIn = Integer.parseInt(bookingIn.substring(0,1)); //Converting string bookingIn to primitive int.
-        int checkOut = Integer.parseInt(bookingOut.substring(0,1)); //Converting string bookingIn to primitive int.
+        int checkIn = Integer.parseInt(bookingIn.substring(0,2)); //Converting string bookingIn to primitive int.
+        int checkOut = Integer.parseInt(bookingOut.substring(0,2)); //Converting string bookingIn to primitive int.
         TextView activeText = findViewById(R.id.activeText);
         totalDays = checkOut - checkIn; //Number of days
         daysLeft = checkOut - Calendar.getInstance().get(Calendar.DAY_OF_MONTH); //Days left = check out day (27th) - current day (25th) = 2
@@ -88,7 +88,7 @@ public class BookingPage extends AppCompatActivity
         }
         else
         {
-            Toast.makeText(BookingPage.this, daysLeft + "daysLeft", Toast.LENGTH_SHORT).show();
+            Toast.makeText(BookingPage.this, totalDays + "daysLeft", Toast.LENGTH_SHORT).show();
             ProgressBar progressBar = findViewById(R.id.progressBar);
             progressBar.setMax(totalDays);
             progressBar.setProgress(daysLeft);
