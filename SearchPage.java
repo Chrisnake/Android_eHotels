@@ -7,6 +7,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -51,10 +52,10 @@ public class SearchPage extends AppCompatActivity
         hotelList.add("Manchester Central");
         hotelList.add("Manchester Fox Street");
         hotelList.add("London Picadilly");
-        hotelList.add("London Kings Cross");
-        hotelList.add("London Baker Street");
         hotelList.add("London Kensington");
-        hotelList.add("London Westminister");
+        hotelList.add("London Westminster");
+
+        final String roomTypes[] = {"London Hammersmith","London Picadilly","London Marylebone"} ;
         Collections.sort(hotelList);
 
         arrayAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, hotelList)
@@ -89,7 +90,8 @@ public class SearchPage extends AppCompatActivity
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
             {
-                String clickedHotel = hotelList.get(i).replaceAll("\\s",""); //Taking the white space out of the hotel search name.
+                String clickedHotel = (String) arrayAdapter.getItem(i);
+                clickedHotel = clickedHotel.replaceAll("\\s",""); //Taking the white space out of the hotel search name.
                 String packageName = "com.example.android.ehotelsapp." + clickedHotel;
                 try //Fast, efficient way to load the hotel activity that the user clicked.
                 {
@@ -138,7 +140,6 @@ public class SearchPage extends AppCompatActivity
         {
             searchView.setQuery(homeQuery, true);
         }
-
         return super.onCreateOptionsMenu(menu);
     }
 }

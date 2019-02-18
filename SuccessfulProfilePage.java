@@ -145,6 +145,10 @@ public class SuccessfulProfilePage extends AppCompatActivity
         imageMap.put("London Marylebone", "https://media-cdn.tripadvisor.com/media/photo-s/06/4b/0b/d9/london-bridge-hotel.jpg");
         imageMap.put("London Picadilly", "https://t-ec.bstatic.com/images/hotel/max1024x768/413/41353407.jpg");
         imageMap.put("London Hammersmith", "https://s-ec.bstatic.com/images/hotel/max1024x768/142/142190398.jpg");
+        imageMap.put("London Kensington", "http://www.hoteldirect.co.uk/images/The_Regency_Exterior.jpg");
+        imageMap.put("London Euston", "https://www.londontoolkit.com/where-to-stay/images/novotel/hero-novotel-hotels.jpg");
+        imageMap.put("London Westminster", "https://thumbnails.trvl-media.com/OSKOfyDLvQ8g0keZ_B_DbdLGq8w=/773x530/smart/filters:quality(60)/images.trvl-media.com/hotels/4000000/3120000/3113100/3113039/dd6865cc_z.jpg");
+        imageMap.put("Birmingham Central", "https://s-ec.bstatic.com/xdata/images/hotel/270x200/18758426.jpg?k=c8de2afa4e05b71053ff72e2bbe1b0ae19f19462aca6609dcf8681405ae8f163&o=");
         return imageMap;
     }
 }

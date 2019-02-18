@@ -41,8 +41,8 @@ public class HomePage extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
         setupBottomNavigation();
-
         SearchView searchView = findViewById(R.id.searchViewHome);
+        SearchPage.homeQuery = ""; //Resetting the search query.
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener()
         {
             @Override

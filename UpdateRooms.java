@@ -110,6 +110,86 @@ public class UpdateRooms
                     }
                 });
                 break;
+
+                case "London Kensington":
+                    final Query key_kensington = reference.child("Hotels").child("London Kensington").child(updatelist.get(i).getRoomType());
+                    key_kensington.addListenerForSingleValueEvent(new ValueEventListener()
+                    {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+                        {
+                            long roomlong = (Long) dataSnapshot.getValue();
+                            long updateRoom = roomlong + 1;
+                            Log.i("RoomUpdated", updateRoom + "hey");
+                            ((DatabaseReference) key_kensington).setValue(updateRoom);
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError)
+                        {
+
+                        }
+                    });
+                    break;
+
+                case "London Euston":
+                    final Query key_euston = reference.child("Hotels").child("London Euston").child(updatelist.get(i).getRoomType());
+                    key_euston.addListenerForSingleValueEvent(new ValueEventListener()
+                    {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+                        {
+                            long roomlong = (Long) dataSnapshot.getValue();
+                            long updateRoom = roomlong + 1;
+                            Log.i("RoomUpdated", updateRoom + "hey");
+                            ((DatabaseReference) key_euston).setValue(updateRoom);
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError)
+                        {
+
+                        }
+                    });
+                    break;
+
+                case "London Westminster":
+                    final Query key_westminster = reference.child("Hotels").child("London Westminster").child(updatelist.get(i).getRoomType());
+                    key_westminster.addListenerForSingleValueEvent(new ValueEventListener()
+                    {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+                        {
+                            long roomlong = (Long) dataSnapshot.getValue();
+                            long updateRoom = roomlong + 1;
+                            Log.i("RoomUpdated", updateRoom + "hey");
+                            ((DatabaseReference) key_westminster).setValue(updateRoom);
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError)
+                        {
+
+                        }
+                    });
+                    break;
+
+                case "Birmingham Central":
+                    final Query key_birminghamcentral = reference.child("Hotels").child("Birmingham Central").child(updatelist.get(i).getRoomType());
+                    key_birminghamcentral.addListenerForSingleValueEvent(new ValueEventListener()
+                    {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+                        {
+                            long roomlong = (Long) dataSnapshot.getValue();
+                            long updateRoom = roomlong + 1;
+                            Log.i("RoomUpdated", updateRoom + "hey");
+                            ((DatabaseReference) key_birminghamcentral).setValue(updateRoom);
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError)
+                        {
+
+                        }
+                    });
+                    break;
             }
         }
     }
