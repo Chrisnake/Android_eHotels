@@ -34,7 +34,7 @@ public class ConfirmBookingPage extends AppCompatActivity
 {
     private Context mContext = ConfirmBookingPage.this;
     private static final int ACTIVITY_NUM = 1;
-    protected String hotelConfirm, roomConfirm, inConfirm, outConfirm, priceConfirm;
+    protected String hotelConfirm, roomConfirm, inConfirm, outConfirm, priceConfirm, roomsLeft;
     private String userKey;
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -48,7 +48,8 @@ public class ConfirmBookingPage extends AppCompatActivity
         inConfirm = getIntent().getStringExtra("CheckIn");
         outConfirm = getIntent().getStringExtra("CheckOut");
         priceConfirm = getIntent().getStringExtra("Price");
-
+        hotelConfirm = getIntent().getStringExtra("Hotel");
+        roomsLeft = getIntent().getStringExtra("Room_Availability");
         getKey();
         getDetails();
         confirmDetails();
@@ -115,6 +116,8 @@ public class ConfirmBookingPage extends AppCompatActivity
                 });
                 Intent ConfirmIntent = new Intent(ConfirmBookingPage.this, BookingConfirmedPage.class);
                 ConfirmIntent.putExtra("hotel_name", hotelConfirm);
+                ConfirmIntent.putExtra("hotel_availability", roomsLeft);
+                ConfirmIntent.putExtra("hotel_room", roomConfirm);
                 startActivity(ConfirmIntent);
             }
         });

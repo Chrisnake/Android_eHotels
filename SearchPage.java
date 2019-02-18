@@ -46,12 +46,10 @@ public class SearchPage extends AppCompatActivity
         hotelList.add("London Marylebone");
         hotelList.add("London Euston");
         hotelList.add("London Hammersmith");
-        hotelList.add("London Canning Town");
         hotelList.add("Birmingham Moor Street");
         hotelList.add("Birmingham Central");
         hotelList.add("Manchester Central");
         hotelList.add("Manchester Fox Street");
-        hotelList.add("London Stratford");
         hotelList.add("London Picadilly");
         hotelList.add("London Kings Cross");
         hotelList.add("London Baker Street");

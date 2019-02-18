@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
+import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.ViewPager;
@@ -56,6 +57,7 @@ public class LondonMarylebone extends AppCompatActivity
     public String room = "";
     public String finalCheckIn = "";
     public String finalCheckOut = "";
+    public String roomLeft = "";
     protected int Price = 20;
     protected ViewPager viewpager;
     protected ViewPagerAdapter viewPagerAdapter;
@@ -197,11 +199,11 @@ public class LondonMarylebone extends AppCompatActivity
                     Toast toast = Toast.makeText(getApplicationContext(),"Error: Please check out at least one day after you check in.", Toast.LENGTH_LONG);
                     toast.show();
                 }
-                else if(dateIn <= GregorianCalendar.getInstance().get(Calendar.DAY_OF_MONTH) || monthIn < GregorianCalendar.getInstance().get(Calendar.MONTH))
-                {
-                    Toast toast = Toast.makeText(getApplicationContext(),"Error: Please check in after today's date.", Toast.LENGTH_LONG);
-                    toast.show();
-                }
+                // else if(dateIn <= GregorianCalendar.getInstance().get(Calendar.DAY_OF_MONTH) || monthIn < GregorianCalendar.getInstance().get(Calendar.MONTH))
+                // {
+                //    Toast toast = Toast.makeText(getApplicationContext(),"Error: Please check in after today's date.", Toast.LENGTH_LONG);
+                //      toast.show();
+                // }
                 else if(!room.equals("") && !finalCheckIn.equals("") && !finalCheckOut.equals("")) //Error handling for users that press book without any acceptable details.
                 {
                     Intent ConfirmIntent = new Intent(LondonMarylebone.this, ConfirmBookingPage.class);
@@ -210,6 +212,7 @@ public class LondonMarylebone extends AppCompatActivity
                     ConfirmIntent.putExtra("CheckIn",  finalCheckIn);
                     ConfirmIntent.putExtra("CheckOut", finalCheckOut);
                     ConfirmIntent.putExtra("Price",  "£" + Price);
+                    ConfirmIntent.putExtra("Room_Availability", roomLeft);
                     startActivity(ConfirmIntent);
                 }
                 else
@@ -238,13 +241,17 @@ public class LondonMarylebone extends AppCompatActivity
 
     protected void hotelLogic()
     {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+
         //Arraylist containing the room types available for the hotel.
         final ArrayList<String> hotelList = new ArrayList<>();
+        final ArrayList<String> availableRooms = new ArrayList<>();
+
         hotelList.add("Single Room");
         hotelList.add("Double Room");
         hotelList.add("Family Room");
         hotelList.add("Large Family Room");
-        hotelList.add("Couple Duplex");
+        hotelList.add("Couple Duplex Room");
 
         // Initialize an array adapter
         arrayAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, hotelList)
@@ -271,19 +278,19 @@ public class LondonMarylebone extends AppCompatActivity
                 switch(i)
                 {
                     case 0: basePrice = 30; //Single Room Base Price
-                        room = "Single Room";
+                        room = "Single Rooms";
                         roomAvailabilities("Single Rooms");
                         break;
                     case 1: basePrice = 60; //Single Room Base Price
-                        room = "Double Room";
+                        room = "Double Rooms";
                         roomAvailabilities("Double Rooms");
                         break;
                     case 2: basePrice = 80; //Family Room Base Price
-                        room = "Family Room";
+                        room = "Family Rooms";
                         roomAvailabilities("Family Rooms");
                         break;
                     case 3: basePrice = 120; //Large Family Room Base Price
-                        room = "Large Family Room";
+                        room = "Large Family Rooms";
                         roomAvailabilities("Large Family Rooms");
                         break;
                     case 4: basePrice = 120; //Couple Duplex Room Base Price
@@ -313,6 +320,7 @@ public class LondonMarylebone extends AppCompatActivity
                 else
                 {
                     bookingValid = true;
+                    roomLeft = dataSnapshot.getValue().toString();
                     String roomAvailability = dataSnapshot.getValue().toString() + " " + userRoom + " Available.";
                     Toast toast = Toast.makeText(getApplicationContext(),roomAvailability, Toast.LENGTH_LONG);
                     toast.show();

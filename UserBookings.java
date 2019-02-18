@@ -16,7 +16,6 @@ public class UserBookings
         hotel = userHotel;
         price = userPrice;
         dateIn = userIn;
-
         dateOut = userOut;
         roomType = userRoom;
         idQR = userQR;

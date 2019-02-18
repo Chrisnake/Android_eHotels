@@ -9,16 +9,25 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+
 public class BookingConfirmedPage extends AppCompatActivity
 {
+    protected String hotelName, roomType;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_booking_confirmed_page);
         TextView hotelText = findViewById(R.id.hotelSuccessTitle);
-        hotelText.setText(getIntent().getStringExtra("hotel_name"));
+        hotelName = getIntent().getStringExtra("hotel_name");
+        roomType = getIntent().getStringExtra("hotel_room");
+        hotelText.setText(hotelName);
 
+        updateRoomAvailability(getIntent().getStringExtra("hotel_availability"));
         animation();
         Handler mHandler = new Handler();
         mHandler.postDelayed(new Runnable()
@@ -39,5 +48,13 @@ public class BookingConfirmedPage extends AppCompatActivity
         ImageView completeImage = findViewById(R.id.completeImage);
         Animation animation = AnimationUtils.loadAnimation(this, R.anim.anim);
         completeImage.setAnimation(animation);
+    }
+
+    protected void updateRoomAvailability(String roomsLeft) //Updates database on the amount of room availabilities left.
+    {
+        int numberooms = Integer.parseInt(roomsLeft) - 1; //Take away one from the number of rooms left to confirm the booking.
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference ref = database.getReference("Hotels").child(hotelName).child(roomType);
+        ref.setValue(numberooms);
     }
 }

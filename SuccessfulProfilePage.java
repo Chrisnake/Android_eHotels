@@ -144,6 +144,7 @@ public class SuccessfulProfilePage extends AppCompatActivity
         HashMap<String,String> imageMap = new HashMap<>(); //TODO: Add a new hash to hashmap for new hotel.
         imageMap.put("London Marylebone", "https://media-cdn.tripadvisor.com/media/photo-s/06/4b/0b/d9/london-bridge-hotel.jpg");
         imageMap.put("London Picadilly", "https://t-ec.bstatic.com/images/hotel/max1024x768/413/41353407.jpg");
+        imageMap.put("London Hammersmith", "https://s-ec.bstatic.com/images/hotel/max1024x768/142/142190398.jpg");
         return imageMap;
     }
 }

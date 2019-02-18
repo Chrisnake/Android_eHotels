@@ -36,13 +36,12 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 import me.relex.circleindicator.CircleIndicator;
 
-public class LondonPicadilly extends AppCompatActivity
+public class LondonHammersmith extends AppCompatActivity
 {
-    private Context mContext = LondonPicadilly.this; //TODO: Change this for class context.
+    private Context mContext = LondonHammersmith.this;
     private static final int ACTIVITY_NUM = 1;
     public static ArrayAdapter arrayAdapter;
     protected ListView roomList;
@@ -51,17 +50,18 @@ public class LondonPicadilly extends AppCompatActivity
     protected DatePickerDialog.OnDateSetListener dateSetListener_out;
     protected int dateIn, dateOut, monthIn, monthOut;
     protected int basePrice = 0;
-    public String hotel = "London Picadilly"; //TODO: Change this for hotel name.
+    public String hotel = "London Hammersmith";
     public String room = "";
     public String finalCheckIn = "";
     public String finalCheckOut = "";
+    public String roomLeft = "";
     protected int Price = 20;
     protected ViewPager viewpager;
     protected ViewPagerAdapter viewPagerAdapter;
-    private Integer[] hotelImages = {R.drawable.london_picadilly_kitchen, R.drawable.london_picadilly_bedroom, R.drawable.london_picadilly_toilet}; //TODO: Change this for images.
+    private Integer[] hotelImages = {R.drawable.london_hammersmith_room, R.drawable.london_hammersmith_lobby, R.drawable.london_hammersmith_bar};
     private ArrayList<Integer> imagesArray = new ArrayList<Integer>();
     protected boolean bookingValid = true;
-    public String roomLeft = "";
+
 
     private void setupBottomNavigation()
     {
@@ -76,7 +76,7 @@ public class LondonPicadilly extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_london_picadilly);
+        setContentView(R.layout.activity_london_hammersmith);
         roomList = findViewById(R.id.roomlistView);
         setupBottomNavigation();
         dateChanger();
@@ -118,7 +118,7 @@ public class LondonPicadilly extends AppCompatActivity
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day)
             {
-                Price = basePrice; //Update the price.
+                Price = basePrice;
                 int daysDifference;
                 month = month + 1; //January starts at 0.
                 monthOut = month;
@@ -136,7 +136,7 @@ public class LondonPicadilly extends AppCompatActivity
                     daysDifference = dateOut - dateIn;
                     Price *= daysDifference;
                     priceView.setText("£" + Price);
-                    Animation animation = AnimationUtils.loadAnimation(mContext, R.anim.fadein);
+                    Animation animation = AnimationUtils.loadAnimation(LondonHammersmith.this, R.anim.fadein);
                     priceView.setAnimation(animation);
                 }
             }
@@ -151,7 +151,7 @@ public class LondonPicadilly extends AppCompatActivity
                 int inYear = calender.get(Calendar.YEAR);
                 int inMonth = calender.get(Calendar.MONTH);
                 int inDay = calender.get(Calendar.DAY_OF_MONTH);
-                DatePickerDialog dialog = new DatePickerDialog(LondonPicadilly.this, android.R.style.Theme_Holo_Dialog_MinWidth, dateSetListener_out, inYear, inMonth, inDay);
+                DatePickerDialog dialog = new DatePickerDialog(LondonHammersmith.this, android.R.style.Theme_Holo_Dialog_MinWidth, dateSetListener_out, inYear, inMonth, inDay);
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 dialog.show();
             }
@@ -166,7 +166,7 @@ public class LondonPicadilly extends AppCompatActivity
                 int year = calender.get(Calendar.YEAR);
                 int month = calender.get(Calendar.MONTH);
                 int day = calender.get(Calendar.DAY_OF_MONTH);
-                DatePickerDialog dialog = new DatePickerDialog(LondonPicadilly.this, android.R.style.Theme_Holo_Dialog_MinWidth, dateSetListener_in, year, month, day);
+                DatePickerDialog dialog = new DatePickerDialog(LondonHammersmith.this, android.R.style.Theme_Holo_Dialog_MinWidth, dateSetListener_in, year, month, day);
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 dialog.show();
             }
@@ -193,17 +193,17 @@ public class LondonPicadilly extends AppCompatActivity
                 }
                 else if(dateIn >= dateOut)
                 {
-                    Toast toast = Toast.makeText(getApplicationContext(),"Error: Please check out atleast one day after you check in.", Toast.LENGTH_LONG);
+                    Toast toast = Toast.makeText(getApplicationContext(),"Error: Please check out at least one day after you check in.", Toast.LENGTH_LONG);
                     toast.show();
                 }
-                else if(dateIn <= GregorianCalendar.getInstance().get(Calendar.DAY_OF_MONTH) || monthIn < GregorianCalendar.getInstance().get(Calendar.MONTH))
-                {
-                    Toast toast = Toast.makeText(getApplicationContext(),"Error: Please check in after today's date.", Toast.LENGTH_LONG);
-                    toast.show();
-                }
+                // else if(dateIn <= GregorianCalendar.getInstance().get(Calendar.DAY_OF_MONTH) || monthIn < GregorianCalendar.getInstance().get(Calendar.MONTH))
+                // {
+                //    Toast toast = Toast.makeText(getApplicationContext(),"Error: Please check in after today's date.", Toast.LENGTH_LONG);
+                //      toast.show();
+                // }
                 else if(!room.equals("") && !finalCheckIn.equals("") && !finalCheckOut.equals("")) //Error handling for users that press book without any acceptable details.
                 {
-                    Intent ConfirmIntent = new Intent(mContext, ConfirmBookingPage.class);
+                    Intent ConfirmIntent = new Intent(LondonHammersmith.this, ConfirmBookingPage.class);
                     ConfirmIntent.putExtra("Hotel", hotel);
                     ConfirmIntent.putExtra("Room", room);
                     ConfirmIntent.putExtra("CheckIn",  finalCheckIn);
@@ -214,7 +214,7 @@ public class LondonPicadilly extends AppCompatActivity
                 }
                 else
                 {
-                    Toast toast = Toast.makeText(getApplicationContext(),"Error: Please fill in all the fields before you confirm.", Toast.LENGTH_LONG);
+                    Toast toast = Toast.makeText(getApplicationContext(),"Error: Please fill in all the fields before you confirm", Toast.LENGTH_LONG);
                     toast.show();
                 }
             }
@@ -230,7 +230,7 @@ public class LondonPicadilly extends AppCompatActivity
 
         //Adding viewpager for the swiping hotel images.
         viewpager = findViewById(R.id.viewPager);
-        viewPagerAdapter = new ViewPagerAdapter(LondonPicadilly.this, imagesArray);
+        viewPagerAdapter = new ViewPagerAdapter(LondonHammersmith.this, imagesArray);
         viewpager.setAdapter(viewPagerAdapter);
         CircleIndicator indicator = findViewById(R.id.indicator);
         indicator.setViewPager(viewpager);
@@ -238,8 +238,11 @@ public class LondonPicadilly extends AppCompatActivity
 
     protected void hotelLogic()
     {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+
         //Arraylist containing the room types available for the hotel.
         final ArrayList<String> hotelList = new ArrayList<>();
+
         hotelList.add("Single Room");
         hotelList.add("Double Room");
         hotelList.add("Family Room");
@@ -298,7 +301,7 @@ public class LondonPicadilly extends AppCompatActivity
     protected void roomAvailabilities(final String userRoom) //Check firebase Hotels child for hotel room availabilities depending on the hotel the user has clicked. Parameter input is user room that they chose.
     {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-        Query key = reference.child("Hotels").child("London Picadilly").child(userRoom);
+        Query key = reference.child("Hotels").child("London Hammersmith").child(userRoom);
         key.addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
