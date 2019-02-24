@@ -18,8 +18,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.HashMap;
-
 public class SIgnUpPage extends AppCompatActivity
 {
     private Context mContext = SIgnUpPage.this;
@@ -48,7 +46,7 @@ public class SIgnUpPage extends AppCompatActivity
         final EditText userEmail = findViewById(R.id.emailField);
         final EditText userPassword = findViewById(R.id.passwordField);
         final EditText cuserPassword = findViewById(R.id.confirmpasswordField);
-        final EditText userName = findViewById(R.id.nameField);
+        final EditText userName = findViewById(R.id.TypeInformation);
         confirmButton.setOnClickListener(new View.OnClickListener()
         {
             @Override

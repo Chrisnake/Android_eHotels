@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -62,6 +63,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 intent.putExtra("booking_in", SuccessfulProfilePage.bookingsList.get(position).getDateIn());
                 intent.putExtra("booking_out", SuccessfulProfilePage.bookingsList.get(position).getDateOut());
                 intent.putExtra("booking_qr", SuccessfulProfilePage.bookingsList.get(position).getIdQR());
+                Log.i("QRID", SuccessfulProfilePage.bookingsList.get(position).getIdQR()+ "hey");
                 mContext.startActivity(intent);
             }
         });
@@ -82,7 +84,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         public ViewHolder(View itemView) {
             super(itemView);
-            image = itemView.findViewById(R.id.image);
+            image = itemView.findViewById(R.id.towels_button);
             imageName = itemView.findViewById(R.id.image_name);
             parentLayout = itemView.findViewById(R.id.parent_layout);
         }

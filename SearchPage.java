@@ -32,7 +32,7 @@ public class SearchPage extends AppCompatActivity
 
     private void setupBottomNavigation()
     {
-        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.navigation);
+        BottomNavigationView bottomNavigationView = findViewById(R.id.navigation);
         BottomNavigationHelper.enableNavigation(mContext, bottomNavigationView); //Enable the logic of the navigation bar.
         Menu menu = bottomNavigationView.getMenu();
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
@@ -47,15 +47,10 @@ public class SearchPage extends AppCompatActivity
         hotelList.add("London Marylebone");
         hotelList.add("London Euston");
         hotelList.add("London Hammersmith");
-        hotelList.add("Birmingham Moor Street");
         hotelList.add("Birmingham Central");
-        hotelList.add("Manchester Central");
-        hotelList.add("Manchester Fox Street");
         hotelList.add("London Picadilly");
         hotelList.add("London Kensington");
         hotelList.add("London Westminster");
-
-        final String roomTypes[] = {"London Hammersmith","London Picadilly","London Marylebone"} ;
         Collections.sort(hotelList);
 
         arrayAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, hotelList)

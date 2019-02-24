@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 
 public class BookingConfirmedPage extends AppCompatActivity
 {
@@ -22,7 +21,7 @@ public class BookingConfirmedPage extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_booking_confirmed_page);
-        TextView hotelText = findViewById(R.id.hotelSuccessTitle);
+        TextView hotelText = findViewById(R.id.requestTypeText);
         hotelName = getIntent().getStringExtra("hotel_name");
         roomType = getIntent().getStringExtra("hotel_room");
         hotelText.setText(hotelName);

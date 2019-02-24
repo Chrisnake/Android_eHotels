@@ -84,14 +84,13 @@ public class SuccessfulProfilePage extends AppCompatActivity
                     String dateIn = (String) datas.child("dateIn").getValue();
                     String dateOut = (String) datas.child("dateOut").getValue();
                     String roomType = (String) datas.child("roomType").getValue();
-                    String qrID = (String) datas.child("qrID").getValue();
+                    String qrID = (String) datas.child("idQR").getValue();
+
                     UserBookings userBookings = new UserBookings(userKey, hotel, price, dateIn, dateOut, roomType, qrID);
                     bookingsList.add(userBookings);
-
                     mNames.add(userBookings.getHotel());
                     mImageUrls.add(HashMapImages().get(userBookings.getHotel())); //Using hashmap where the key is the hotel name.
                 }
-
                 initRecyclerView();
             }
 

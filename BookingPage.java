@@ -1,6 +1,7 @@
 package com.example.android.ehotelsapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,6 +9,8 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -35,8 +38,20 @@ public class BookingPage extends AppCompatActivity
         String bookingIn = getIntent().getStringExtra("booking_in");
         String bookingOut = getIntent().getStringExtra("booking_out");
         String QRID = getIntent().getStringExtra("booking_qr");
+        Toast.makeText(BookingPage.this, QRID + "QR ID", Toast.LENGTH_SHORT).show();
         getIncomingIntent(bookingIn, bookingOut, QRID);
         progressBar(bookingIn, bookingOut);
+
+        Button yourRoom = findViewById(R.id.yourRoomButton);
+        yourRoom.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                Intent manageRoom = new Intent(BookingPage.this, YourRoom.class);
+                startActivity(manageRoom);
+            }
+        });
     }
 
     private void setupBottomNavigation()
@@ -65,12 +80,14 @@ public class BookingPage extends AppCompatActivity
             MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
             try
             {
+                //Toast.makeText(BookingPage.this, bookingQR + "QR ID", Toast.LENGTH_SHORT).show();
                 BitMatrix bitMatrix = multiFormatWriter.encode(String.valueOf(bookingQR), BarcodeFormat.QR_CODE, 500,500);
                 BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
                 Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
                 QR.setImageBitmap(bitmap);
 
-            } catch (WriterException e) { e.printStackTrace(); }
+            }
+            catch (WriterException e) { e.printStackTrace(); }
         }
     }
 

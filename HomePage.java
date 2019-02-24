@@ -3,6 +3,7 @@ package com.example.android.ehotelsapp;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -10,17 +11,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.SearchView;
 import android.widget.Toast;
-
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 
 public class HomePage extends AppCompatActivity
 {
@@ -60,8 +58,8 @@ public class HomePage extends AppCompatActivity
                 return false;
             }
         });
-
         updateRoomAvailabilities();
+        updateDoNotDisturb();
     }
 
     protected void updateRoomAvailabilities() //Goes through all user bookings and reviews if any of the bookings have passed the current date. If they have then add 1 to room availability.
@@ -94,8 +92,6 @@ public class HomePage extends AppCompatActivity
                     int checkoutInt = Integer.parseInt(dayOut); //Converting it to an integer.
                     int yearoutInt = Integer.parseInt(yearOut);
 
-                    Log.i("Current Date", currentDay + " " +  currentMonth + " " +  currentYear);
-                    Log.i("Booking Date", "Day: " + dayOut + "Month: " + monthOut + " Year: " + yearOut);
                     if(checkoutInt < currentDay || monthoutInt < currentMonth || yearoutInt < currentYear) //If the user check out date is after the current day, the booking is finished, thus add one back to its child value.
                     {
                         Log.i("Expired Date", "Day: " + dayOut + "Month: " + monthOut + " Year: " + yearOut);
@@ -112,6 +108,44 @@ public class HomePage extends AppCompatActivity
             public void onCancelled(DatabaseError databaseError)
             {
                 throw databaseError.toException(); //don't ignore errors
+            }
+        });
+    }
+
+    protected void updateDoNotDisturb() //Goes through the requests database and checks for children with requestType as do not disturb,
+    {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        Query key = reference.child("Requests");
+        Calendar calendar = Calendar.getInstance();
+        int currentHour = calendar.get(Calendar.HOUR_OF_DAY);
+        int currentMinute = calendar.get(Calendar.MINUTE);
+        final int currentTime = Integer.parseInt((String.valueOf(currentHour) + String.valueOf(currentMinute)));
+        Toast toast = Toast.makeText(getApplicationContext(), "Current time " +  currentTime , Toast.LENGTH_LONG);
+        toast.show();
+
+        key.addListenerForSingleValueEvent(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+            {
+                for (DataSnapshot user : dataSnapshot.getChildren())
+                {
+                    String requestType = (String) user.child("requestType").getValue();
+                    if(requestType.equals("Do Not Disturb"))
+                    {
+                        String disturbTime = (String) user.child("requestInformation").getValue();
+                        int DisturbTime = Integer.parseInt(disturbTime);
+                        if(currentTime > DisturbTime) //If the do not disturb set time is greater than the current time, remove it.
+                        {
+                            user.getRef().removeValue();
+                        }
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError)
+            {
+
             }
         });
     }
