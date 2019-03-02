@@ -64,8 +64,6 @@ public class LondonMarylebone extends AppCompatActivity
     private Integer[] hotelImages = {R.drawable.london_marylebone_kitchen, R.drawable.london_marylebone, R.drawable.london_marylebone_lobby};
     private ArrayList<Integer> imagesArray = new ArrayList<Integer>();
     protected boolean bookingValid = true;
-
-
     private void setupBottomNavigation()
     {
         BottomNavigationView bottomNavigationView = findViewById(R.id.navigation);
@@ -134,7 +132,16 @@ public class LondonMarylebone extends AppCompatActivity
                 displayOutDate.setText(date);
 
                 dateOut = day;
-                if(displayInDate != null) //If the user has inputted a check in date.
+
+                if(monthOut >= monthIn && dateOut < dateIn)
+                {
+                    daysDifference = dateOut + 31 - dateIn;
+                    Price *= daysDifference;
+                    priceView.setText("£" + Price);
+                    Animation animation = AnimationUtils.loadAnimation(LondonMarylebone.this, R.anim.fadein);
+                    priceView.setAnimation(animation);
+                }
+                else if(displayInDate != null) //If the user has inputted a check in date.
                 {
                     daysDifference = dateOut - dateIn;
                     Price *= daysDifference;
@@ -194,16 +201,16 @@ public class LondonMarylebone extends AppCompatActivity
                     Toast toast = Toast.makeText(getApplicationContext(),"Error: There are no more availabilities for that room.", Toast.LENGTH_LONG);
                     toast.show();
                 }
-                else if(dateIn >= dateOut)
+                else if (dateIn > dateOut && monthIn >= monthOut)
                 {
                     Toast toast = Toast.makeText(getApplicationContext(),"Error: Please check out at least one day after you check in.", Toast.LENGTH_LONG);
                     toast.show();
                 }
-                // else if(dateIn <= GregorianCalendar.getInstance().get(Calendar.DAY_OF_MONTH) || monthIn < GregorianCalendar.getInstance().get(Calendar.MONTH))
-                // {
+                //else if(dateIn <= GregorianCalendar.getInstance().get(Calendar.DAY_OF_MONTH) && monthIn < GregorianCalendar.getInstance().get(Calendar.MONTH))
+                //{
                 //    Toast toast = Toast.makeText(getApplicationContext(),"Error: Please check in after today's date.", Toast.LENGTH_LONG);
                 //      toast.show();
-                // }
+                //}
                 else if(!room.equals("") && !finalCheckIn.equals("") && !finalCheckOut.equals("")) //Error handling for users that press book without any acceptable details.
                 {
                     Intent ConfirmIntent = new Intent(LondonMarylebone.this, ConfirmBookingPage.class);
@@ -241,11 +248,8 @@ public class LondonMarylebone extends AppCompatActivity
 
     protected void hotelLogic()
     {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-
         //Arraylist containing the room types available for the hotel.
         final ArrayList<String> hotelList = new ArrayList<>();
-        final ArrayList<String> availableRooms = new ArrayList<>();
 
         hotelList.add("Single Room");
         hotelList.add("Double Room");

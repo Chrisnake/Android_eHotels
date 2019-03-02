@@ -39,6 +39,7 @@ public class SuccessfulProfilePage extends AppCompatActivity
     private static final int ACTIVITY_NUM = 2;
     private ArrayList<String> mNames = new ArrayList<>();
     private ArrayList<String> mImageUrls = new ArrayList<>();
+    private ArrayList<String> mCheckinout = new ArrayList<>();
     public static ArrayList<UserBookings> bookingsList = new ArrayList<>();
     public static String userKey;
 
@@ -57,6 +58,7 @@ public class SuccessfulProfilePage extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_successful_profile_page);
         setupBottomNavigation();
+
         readKey(new MyCallback()
         {
             @Override
@@ -66,7 +68,6 @@ public class SuccessfulProfilePage extends AppCompatActivity
                 findBookings(value);
             }
         });
-
     }
 
     protected void findBookings(final String userKey) //Finds bookings made by the user and place each object in arraylist of userBookings
@@ -77,6 +78,7 @@ public class SuccessfulProfilePage extends AppCompatActivity
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot)
             {
+                int i = 0;
                 for (DataSnapshot datas : dataSnapshot.getChildren())
                 {
                     String hotel = (String) datas.child("Hotel").getValue();
@@ -85,11 +87,17 @@ public class SuccessfulProfilePage extends AppCompatActivity
                     String dateOut = (String) datas.child("dateOut").getValue();
                     String roomType = (String) datas.child("roomType").getValue();
                     String qrID = (String) datas.child("idQR").getValue();
+                    String roomNumber = (String) datas.child("RoomNumber").getValue();
 
-                    UserBookings userBookings = new UserBookings(userKey, hotel, price, dateIn, dateOut, roomType, qrID);
+                    UserBookings userBookings = new UserBookings(userKey, hotel, price, dateIn, dateOut, roomType, qrID, roomNumber);
                     bookingsList.add(userBookings);
                     mNames.add(userBookings.getHotel());
                     mImageUrls.add(HashMapImages().get(userBookings.getHotel())); //Using hashmap where the key is the hotel name.
+                    mCheckinout.add(dateIn + "   ➜   " + dateOut);
+
+                    Log.i("why", "position " + i + " " + bookingsList.get(i).getDateIn() + " " + bookingsList.get(i).getDateOut() + " ");
+                    Log.i("difference?", "position " + i + " " + dateIn + " " + dateOut + " ");
+                    i++;
                 }
                 initRecyclerView();
             }
@@ -105,7 +113,7 @@ public class SuccessfulProfilePage extends AppCompatActivity
     private void initRecyclerView()
     {
         final RecyclerView recyclerView = findViewById(R.id.recyclerView);
-        RecyclerViewAdapter adapter = new RecyclerViewAdapter(this, mNames, mImageUrls);
+        RecyclerViewAdapter adapter = new RecyclerViewAdapter(this, mNames, mImageUrls, mCheckinout);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
@@ -140,7 +148,7 @@ public class SuccessfulProfilePage extends AppCompatActivity
 
     protected HashMap<String, String> HashMapImages() //Creates a hashmap of images where the key is the hotel name and the value is the hotel image link.
     {
-        HashMap<String,String> imageMap = new HashMap<>(); //TODO: Add a new hash to hashmap for new hotel.
+        HashMap<String,String> imageMap = new HashMap<>();
         imageMap.put("London Marylebone", "https://media-cdn.tripadvisor.com/media/photo-s/06/4b/0b/d9/london-bridge-hotel.jpg");
         imageMap.put("London Picadilly", "https://t-ec.bstatic.com/images/hotel/max1024x768/413/41353407.jpg");
         imageMap.put("London Hammersmith", "https://s-ec.bstatic.com/images/hotel/max1024x768/142/142190398.jpg");

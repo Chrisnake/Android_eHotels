@@ -9,8 +9,9 @@ public class UserBookings
     private String dateOut;
     private String roomType;
     private String idQR;
+    private String userRoomNumber;
 
-    public UserBookings(String id, String userHotel, String userPrice, String userIn, String userOut, String userRoom, String userQR)
+    public UserBookings(String id, String userHotel, String userPrice, String userIn, String userOut, String userRoom, String userQR, String userNumber)
     {
         userID = id;
         hotel = userHotel;
@@ -19,6 +20,8 @@ public class UserBookings
         dateOut = userOut;
         roomType = userRoom;
         idQR = userQR;
+        userRoomNumber = userNumber;
+
     }
     public String getUserID()
     {
@@ -76,4 +79,15 @@ public class UserBookings
     public void setIdQR(String idQR) {
         this.idQR = idQR;
     }
+
+    public String getUserRoomNumber()
+    {
+        return userRoomNumber;
+    }
+
+    public void setUserRoomNumber(String userRoomNumber)
+    {
+        this.userRoomNumber = userRoomNumber;
+    }
+
 }

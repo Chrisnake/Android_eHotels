@@ -52,7 +52,7 @@ public class RequestReport extends AppCompatActivity
 
     protected void updateTowels()
     {
-        final EditText getInformation = findViewById(R.id.TypeInformation);
+        final EditText getInformation = findViewById(R.id.bathTowels);
         final FirebaseDatabase database = FirebaseDatabase.getInstance(); //Connecting firebase to confirm activity.
         final DatabaseReference ref = database.getReference("Requests");
         Button confirm = findViewById(R.id.towelsButton);

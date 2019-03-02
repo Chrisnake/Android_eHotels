@@ -3,6 +3,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +20,14 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -29,6 +38,7 @@ public class SearchPage extends AppCompatActivity
     public static ArrayAdapter arrayAdapter;
     public static String homeQuery = "";
     protected SearchView searchView;
+    public static ArrayList<String> currentQRID = new ArrayList<>();
 
     private void setupBottomNavigation()
     {
@@ -106,6 +116,7 @@ public class SearchPage extends AppCompatActivity
         setContentView(R.layout.activity_search_page);
         setupBottomNavigation();
         implementSearch();
+        gettakenroomsQRid();
     }
 
     @Override
@@ -136,5 +147,37 @@ public class SearchPage extends AppCompatActivity
             searchView.setQuery(homeQuery, true);
         }
         return super.onCreateOptionsMenu(menu);
+    }
+
+    protected void gettakenroomsQRid() //Gets all qrIDs in the bookings table and stores them in an arraylist.
+    {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        Query key = reference.child("Bookings").orderByChild("idQR");
+        key.addListenerForSingleValueEvent(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+            {
+                for(DataSnapshot datas: dataSnapshot.getChildren())
+                {
+                    String QRID = (String) datas.child("idQR").getValue();
+                    if(QRID == null)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        Log.i("TakenQRS", QRID);
+                        currentQRID.add(QRID);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError)
+            {
+
+            }
+        });
     }
 }

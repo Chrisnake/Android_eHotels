@@ -19,11 +19,13 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.UUID;
 
 public class HomePage extends AppCompatActivity
 {
     private Context mContext = HomePage.this;
     private static final int ACTIVITY_NUM = 0;
+
     private void setupBottomNavigation()
     {
         BottomNavigationView bottomNavigationView = findViewById(R.id.navigation);
@@ -60,6 +62,7 @@ public class HomePage extends AppCompatActivity
         });
         updateRoomAvailabilities();
         updateDoNotDisturb();
+        //adddatabase("");
     }
 
     protected void updateRoomAvailabilities() //Goes through all user bookings and reviews if any of the bookings have passed the current date. If they have then add 1 to room availability.
@@ -83,6 +86,10 @@ public class HomePage extends AppCompatActivity
                 ArrayList<UpdateRooms> updateRooms = new ArrayList<>();
                 for (DataSnapshot user : dataSnapshot.getChildren())
                 {
+                    if(user.child("dateOut").getValue() == null)
+                    {
+                        break;
+                    }
                     String dateOut = (String) user.child("dateOut").getValue();
                     String monthOut = dateOut.substring(3,5);
                     String dayOut = dateOut.substring(0,2); //Gets the day of the month of checkout.
@@ -96,9 +103,11 @@ public class HomePage extends AppCompatActivity
                     {
                         Log.i("Expired Date", "Day: " + dayOut + "Month: " + monthOut + " Year: " + yearOut);
                         String hotel = (String) user.child("Hotel").getValue();
+                        String roomNumber = (String) user.child("RoomNumber").getValue();
                         String roomType = (String) user.child("roomType").getValue();
                         UpdateRooms newUpdate = new UpdateRooms(hotel,roomType);
                         updateRooms.add(newUpdate);
+                        updateroomExpirations(hotel, roomNumber); //Updates the ID of the room, giving it a new fresh id that noone has access too.
                         user.getRef().removeValue();
                     }
                 }
@@ -120,8 +129,6 @@ public class HomePage extends AppCompatActivity
         int currentHour = calendar.get(Calendar.HOUR_OF_DAY);
         int currentMinute = calendar.get(Calendar.MINUTE);
         final int currentTime = Integer.parseInt((String.valueOf(currentHour) + String.valueOf(currentMinute)));
-        Toast toast = Toast.makeText(getApplicationContext(), "Current time " +  currentTime , Toast.LENGTH_LONG);
-        toast.show();
 
         key.addListenerForSingleValueEvent(new ValueEventListener()
         {
@@ -148,5 +155,27 @@ public class HomePage extends AppCompatActivity
 
             }
         });
+    }
+
+    protected void updateroomExpirations(String userHotel, String userRoom) //When a booking is finished, update the id of the room by giving it a random id.
+    {
+
+        final FirebaseDatabase database = FirebaseDatabase.getInstance(); //Connecting firebase to login activity.
+        final DatabaseReference ref = database.getReference("Rooms").child(userHotel).child(userRoom);
+        Log.i("NewRoomID", "new ID set!");
+        ref.setValue(UUID.randomUUID().toString());
+    }
+
+    protected void adddatabase(String userHotel)
+    {
+        String id;
+        final FirebaseDatabase database = FirebaseDatabase.getInstance(); //Connecting firebase to login activity.
+        final DatabaseReference ref = database.getReference("Rooms").child("London Marylebone");
+        for(int i = 1; i < 401; i++)
+        {
+            id = UUID.randomUUID().toString();
+            String childKey = "Room " + i;
+            ref.child(childKey).setValue(id);
+        }
     }
 }

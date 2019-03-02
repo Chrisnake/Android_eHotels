@@ -30,17 +30,30 @@ public class RequestTowels extends AppCompatActivity
     private static final int ACTIVITY_NUM = 2;
     private String userKey;
     private String requestType = "Towel";
-
+    EditText bathTowelQuantity;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_request_towels);
         setupBottomNavigation();
+        initialiseEditTexts();
         getKey();
         updateTowels();
     }
 
+    protected void initialiseEditTexts()
+    {
+        EditText bathTowel = findViewById(R.id.bathTowels);
+        EditText faceTowel = findViewById(R.id.faceTowel);
+        EditText bathMat = findViewById(R.id.bathMat);
+        EditText handTowel = findViewById(R.id.handTowel);
+
+        bathTowel.setEnabled(false);
+        faceTowel.setEnabled(false);
+        bathMat.setEnabled(false);
+        handTowel.setEnabled(false);
+    }
     private void setupBottomNavigation()
     {
         BottomNavigationView bottomNavigationView = findViewById(R.id.navigation);
@@ -52,7 +65,6 @@ public class RequestTowels extends AppCompatActivity
 
     protected void updateTowels()
     {
-        final EditText getInformation = findViewById(R.id.TypeInformation);
         final FirebaseDatabase database = FirebaseDatabase.getInstance(); //Connecting firebase to confirm activity.
         final DatabaseReference ref = database.getReference("Requests");
         Button confirm = findViewById(R.id.towelsButton);
@@ -61,10 +73,15 @@ public class RequestTowels extends AppCompatActivity
             @Override
             public void onClick(View view)
             {
+                EditText bathTowel= findViewById(R.id.bathTowelQuantity);
+                EditText faceTowel = findViewById(R.id.faceTowelQuantity);
+                EditText bathMat = findViewById(R.id.bathMatQuantity);
+                EditText handTowel = findViewById(R.id.handTowelQuantity);
+                final String towelRequest = "Bath Towels: " + bathTowel.getText() + " Face Towels: " + faceTowel.getText() + " Bath Maths: " + bathMat.getText() + " Hand Towels: " + handTowel.getText();
                 HashMap<String, String> requestData = new HashMap<String, String>(); //Putting data in a hashmap with key and values.
                 requestData.put("userKey", userKey);
                 requestData.put("requestType", requestType);
-                requestData.put("requestInformation",getInformation.getText().toString());
+                requestData.put("requestInformation",towelRequest);
                 ref.push().setValue(requestData).addOnCompleteListener(new OnCompleteListener<Void>()  //Pushing the data with respect to oncompletelistener for errors.
                 {
                     @Override

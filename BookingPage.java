@@ -22,6 +22,8 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
+import org.w3c.dom.Text;
+
 public class BookingPage extends AppCompatActivity
 {
     private Context mContext = BookingPage.this;
@@ -38,8 +40,11 @@ public class BookingPage extends AppCompatActivity
         String bookingIn = getIntent().getStringExtra("booking_in");
         String bookingOut = getIntent().getStringExtra("booking_out");
         String QRID = getIntent().getStringExtra("booking_qr");
-        Toast.makeText(BookingPage.this, QRID + "QR ID", Toast.LENGTH_SHORT).show();
-        getIncomingIntent(bookingIn, bookingOut, QRID);
+        String bookingRoomType = getIntent().getStringExtra("booking_roomtype");
+        String bookingPrice = getIntent().getStringExtra("booking_price");
+        String bookingRoomNumber = getIntent().getStringExtra("booking_roomnumber");
+
+        getIncomingIntent(bookingIn, bookingOut, QRID, bookingRoomType, bookingPrice, bookingRoomNumber);
         progressBar(bookingIn, bookingOut);
 
         Button yourRoom = findViewById(R.id.yourRoomButton);
@@ -63,24 +68,28 @@ public class BookingPage extends AppCompatActivity
         menuItem.setChecked(true);
     }
 
-    private void getIncomingIntent(String bookingIn, String bookingOut, String bookingQR)
+    private void getIncomingIntent(String bookingIn, String bookingOut, String bookingQR, String bookingRoom, String bookingCost, String bookingNumber)
     {
         TextView textIn = findViewById(R.id.CheckIn);
         TextView textOut = findViewById(R.id.CheckOut);
         TextView textHotel = findViewById(R.id.Hotel);
+        TextView textRoom = findViewById(R.id.roomType);
+        TextView textCost = findViewById(R.id.Cost);
         ImageView QR = findViewById(R.id.QRCode);
+        Button buttonNumber = findViewById(R.id.roomNumberButton);
+
         if(getIntent().hasExtra("image_name"))
         {
             String imageName = getIntent().getStringExtra("image_name");
             textIn.setText("Check In: " + bookingIn);
             textOut.setText("Check Out: " + bookingOut);
             textHotel.setText(imageName);
-
-            //TODO: Store the qrID to the Bookings table in the database and access that ID through the database to generate the QR.
+            textRoom.setText("Room Type: " + bookingRoom);
+            textCost.setText("Total Cost " + bookingCost);
+            buttonNumber.setText(bookingNumber);
             MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
             try
             {
-                //Toast.makeText(BookingPage.this, bookingQR + "QR ID", Toast.LENGTH_SHORT).show();
                 BitMatrix bitMatrix = multiFormatWriter.encode(String.valueOf(bookingQR), BarcodeFormat.QR_CODE, 500,500);
                 BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
                 Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);

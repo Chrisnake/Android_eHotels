@@ -46,7 +46,7 @@ public class SIgnUpPage extends AppCompatActivity
         final EditText userEmail = findViewById(R.id.emailField);
         final EditText userPassword = findViewById(R.id.passwordField);
         final EditText cuserPassword = findViewById(R.id.confirmpasswordField);
-        final EditText userName = findViewById(R.id.TypeInformation);
+        final EditText userName = findViewById(R.id.bathTowels);
         confirmButton.setOnClickListener(new View.OnClickListener()
         {
             @Override

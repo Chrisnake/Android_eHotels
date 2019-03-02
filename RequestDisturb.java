@@ -2,7 +2,6 @@ package com.example.android.ehotelsapp;
 
 import java.util.Calendar;
 
-import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -44,6 +43,7 @@ public class RequestDisturb extends AppCompatActivity
         initialiseTime();
         getKey();
         updateDoNotDisturb();
+        showDoNotDisturb();
     }
     private void setupBottomNavigation()
     {
@@ -56,7 +56,7 @@ public class RequestDisturb extends AppCompatActivity
 
     protected void initialiseTime()
     {
-        final EditText timeSelected = findViewById(R.id.TypeInformation);
+        final EditText timeSelected = findViewById(R.id.activeInactive);
         timeSelected.setEnabled(false);
         Button setTime = findViewById(R.id.settimebutton);
         setTime.setOnClickListener(new View.OnClickListener()
@@ -74,7 +74,7 @@ public class RequestDisturb extends AppCompatActivity
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute)
                     {
                         timePicker.setIs24HourView(true);
-                        timeSelected.setText(selectedHour + ":" + selectedMinute);
+                        timeSelected.setText("Until " + selectedHour + ":" + selectedMinute);
                         selectedTimeMain = (String.valueOf(selectedHour) + String.valueOf(selectedMinute));
                     }
                 }, hour, minute, true);//Yes 24 hour time
@@ -138,6 +138,36 @@ public class RequestDisturb extends AppCompatActivity
                 Intent ConfirmIntent = new Intent(RequestDisturb.this, RequestConfirmed.class);
                 ConfirmIntent.putExtra("request_type", "Your " + "Privacy");
                 startActivity(ConfirmIntent);
+            }
+        });
+    }
+
+    protected void showDoNotDisturb() //Shows the time of do not disturb mode.
+    {
+        final EditText activeInactive = findViewById(R.id.activeInactive);
+        activeInactive.setEnabled(false);
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        Query key = reference.child("Requests");
+        key.addListenerForSingleValueEvent(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+            {
+                for (DataSnapshot user : dataSnapshot.getChildren())
+                {
+                    String requestType = (String) user.child("requestType").getValue();
+                    String usercurrent = (String) user.child("userKey").getValue();
+                    if(requestType.equals("Do Not Disturb") && usercurrent.equals(userKey))
+                    {
+                        String disturbTime = (String) user.child("requestInformation").getValue();
+                        activeInactive.setText("Until " + disturbTime);
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError)
+            {
+
             }
         });
     }

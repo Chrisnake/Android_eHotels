@@ -27,21 +27,27 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.UUID;
 
 public class ConfirmBookingPage extends AppCompatActivity
 {
     private Context mContext = ConfirmBookingPage.this;
     private static final int ACTIVITY_NUM = 1;
-    protected String hotelConfirm, roomConfirm, inConfirm, outConfirm, priceConfirm, roomsLeft;
+    protected String hotelConfirm, roomConfirm, inConfirm, outConfirm, priceConfirm, roomsLeft, roomNumber = "Room 101";
     private String userKey;
+    protected ArrayList<String> currentQRID = new ArrayList<>();
+    protected String qrID;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_confirm_booking_page);
         setupBottomNavigation();
+
+        qrID = UUID.randomUUID().toString();
 
         hotelConfirm = getIntent().getStringExtra("Hotel");
         roomConfirm = getIntent().getStringExtra("Room");
@@ -50,6 +56,8 @@ public class ConfirmBookingPage extends AppCompatActivity
         priceConfirm = getIntent().getStringExtra("Price");
         hotelConfirm = getIntent().getStringExtra("Hotel");
         roomsLeft = getIntent().getStringExtra("Room_Availability");
+
+        getfreeRoom(hotelConfirm);
         getKey();
         getDetails();
         confirmDetails();
@@ -81,8 +89,8 @@ public class ConfirmBookingPage extends AppCompatActivity
 
     protected void confirmDetails()
     {
-        Random rand = new Random();
-        final String qrID = String.valueOf(rand.nextInt(100000) + 1); //Generate a random QRID for the QR code.
+        //After the user clicks confirm, create a random qrID and replace that value with the current free rooms value.
+        //Once the user has finished a booking, replace the current value of the room to a new random roomID
         final FirebaseDatabase database = FirebaseDatabase.getInstance(); //Connecting firebase to confirm activity.
         final DatabaseReference ref = database.getReference("Bookings");
         Button confirm = findViewById(R.id.confirmButton);
@@ -99,6 +107,7 @@ public class ConfirmBookingPage extends AppCompatActivity
                 bookingsData.put("dateOut", outConfirm);
                 bookingsData.put("Price", priceConfirm);
                 bookingsData.put("idQR", qrID);
+                bookingsData.put("RoomNumber", roomNumber);
                 ref.push().setValue(bookingsData).addOnCompleteListener(new OnCompleteListener<Void>()  //Pushing the data with respect to oncompletelistener for errors.
                 {
                     @Override
@@ -137,6 +146,40 @@ public class ConfirmBookingPage extends AppCompatActivity
                     String keys = datas.getKey();
                     Toast.makeText(ConfirmBookingPage.this, keys, Toast.LENGTH_LONG).show();
                     userKey = keys;
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError)
+            {
+
+            }
+        });
+    }
+
+    protected void getfreeRoom(final String hotelName) //Gets the next available free room from the Rooms - Hotel firebase table and finds the next value where there is no match in the bookings database.
+    {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        Query key = reference.child("Rooms").child(hotelName); //Checks for free rooms in Room table.
+        key.addListenerForSingleValueEvent(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                for(DataSnapshot datas: dataSnapshot.getChildren())
+                {
+                    String currentroomID = (String) datas.getValue(); //Check the value to see if there is a match with this rooms id, and other bookings. If there is a match, go to the next available room.
+                    Log.i("roomID", currentroomID + "");
+                    Log.i("currentQR", SearchPage.currentQRID.get(0) + "currentId");
+                    if(!SearchPage.currentQRID.contains(currentroomID)) //Create an arraylist of all current qrIDs and check if the value matches with any of the values in the arraylist. If they do, the room is taken.
+                    {
+                        String keyNumber = datas.getKey();
+                        Log.i("keynumber", keyNumber + "");
+                        FirebaseDatabase database = FirebaseDatabase.getInstance();
+                        DatabaseReference ref = database.getReference("Rooms").child(hotelName).child(keyNumber);
+                        roomNumber = keyNumber;
+                        ref.setValue(qrID);
+                        break;
+                    }
                 }
             }
             @Override

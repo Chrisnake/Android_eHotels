@@ -47,7 +47,6 @@ public class ViewPagerAdapter extends PagerAdapter
     {
         inflater = (LayoutInflater) activity.getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View itemView = inflater.inflate(R.layout.viewpager_item, container, false);
-
         ImageView image;
         image = itemView.findViewById(R.id.viewpagerImage);
         DisplayMetrics display = new DisplayMetrics();

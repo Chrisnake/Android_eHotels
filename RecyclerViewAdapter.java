@@ -25,13 +25,15 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     private ArrayList<String> mImageNames = new ArrayList<>();
     private ArrayList<String> mImages = new ArrayList<>();
+    private ArrayList<String> mcheckinout = new ArrayList<>();
     private Context mContext;
 
-    public RecyclerViewAdapter(Context context, ArrayList<String> imageNames, ArrayList<String> images )
+    public RecyclerViewAdapter(Context context, ArrayList<String> imageNames, ArrayList<String> images, ArrayList<String> checkinout)
     {
         mImageNames = imageNames;
         mImages = images;
         mContext = context;
+        mcheckinout = checkinout;
     }
 
     @Override
@@ -51,7 +53,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 .into(holder.image);
 
         holder.imageName.setText(mImageNames.get(position));
-
+        holder.checkinout.setText(mcheckinout.get(position));
         holder.parentLayout.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -63,7 +65,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 intent.putExtra("booking_in", SuccessfulProfilePage.bookingsList.get(position).getDateIn());
                 intent.putExtra("booking_out", SuccessfulProfilePage.bookingsList.get(position).getDateOut());
                 intent.putExtra("booking_qr", SuccessfulProfilePage.bookingsList.get(position).getIdQR());
+                intent.putExtra("booking_roomtype", SuccessfulProfilePage.bookingsList.get(position).getRoomType());
+                intent.putExtra("booking_price", SuccessfulProfilePage.bookingsList.get(position).getPrice());
+                intent.putExtra("booking_roomnumber", SuccessfulProfilePage.bookingsList.get(position).getUserRoomNumber());
                 Log.i("QRID", SuccessfulProfilePage.bookingsList.get(position).getIdQR()+ "hey");
+                Log.i("why2?", "position is " + position + " " + SuccessfulProfilePage.bookingsList.get(position).getDateIn() + " " + SuccessfulProfilePage.bookingsList.get(position).getDateOut() + " ");
                 mContext.startActivity(intent);
             }
         });
@@ -80,13 +86,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         CircleImageView image;
         TextView imageName;
+        TextView checkinout;
         RelativeLayout parentLayout;
 
-        public ViewHolder(View itemView) {
+        public ViewHolder(View itemView)
+        {
             super(itemView);
             image = itemView.findViewById(R.id.towels_button);
             imageName = itemView.findViewById(R.id.image_name);
             parentLayout = itemView.findViewById(R.id.parent_layout);
+            checkinout = itemView.findViewById(R.id.checkincheckout);
         }
     }
 }

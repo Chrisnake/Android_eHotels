@@ -9,8 +9,12 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 public class BookingConfirmedPage extends AppCompatActivity
 {
@@ -25,7 +29,6 @@ public class BookingConfirmedPage extends AppCompatActivity
         hotelName = getIntent().getStringExtra("hotel_name");
         roomType = getIntent().getStringExtra("hotel_room");
         hotelText.setText(hotelName);
-
         updateRoomAvailability(getIntent().getStringExtra("hotel_availability"));
         animation();
         Handler mHandler = new Handler();
