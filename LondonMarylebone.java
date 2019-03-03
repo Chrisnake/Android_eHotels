@@ -34,7 +34,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -64,6 +63,7 @@ public class LondonMarylebone extends AppCompatActivity
     private Integer[] hotelImages = {R.drawable.london_marylebone_kitchen, R.drawable.london_marylebone, R.drawable.london_marylebone_lobby};
     private ArrayList<Integer> imagesArray = new ArrayList<Integer>();
     protected boolean bookingValid = true;
+
     private void setupBottomNavigation()
     {
         BottomNavigationView bottomNavigationView = findViewById(R.id.navigation);
@@ -206,11 +206,11 @@ public class LondonMarylebone extends AppCompatActivity
                     Toast toast = Toast.makeText(getApplicationContext(),"Error: Please check out at least one day after you check in.", Toast.LENGTH_LONG);
                     toast.show();
                 }
-                //else if(dateIn <= GregorianCalendar.getInstance().get(Calendar.DAY_OF_MONTH) && monthIn < GregorianCalendar.getInstance().get(Calendar.MONTH))
-                //{
-                //    Toast toast = Toast.makeText(getApplicationContext(),"Error: Please check in after today's date.", Toast.LENGTH_LONG);
-                //      toast.show();
-                //}
+                else if(dateIn <= GregorianCalendar.getInstance().get(Calendar.DAY_OF_MONTH) && monthIn < GregorianCalendar.getInstance().get(Calendar.MONTH))
+                {
+                    Toast toast = Toast.makeText(getApplicationContext(),"Error: Please check in after today's date.", Toast.LENGTH_LONG);
+                      toast.show();
+                }
                 else if(!room.equals("") && !finalCheckIn.equals("") && !finalCheckOut.equals("")) //Error handling for users that press book without any acceptable details.
                 {
                     Intent ConfirmIntent = new Intent(LondonMarylebone.this, ConfirmBookingPage.class);

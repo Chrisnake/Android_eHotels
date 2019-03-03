@@ -117,9 +117,12 @@ public class RequestDisturb extends AppCompatActivity
             public void onClick(View view)
             {
                 HashMap<String, String> requestData = new HashMap<String, String>(); //Putting data in a hashmap with key and values.
+                String hotel = getIntent().getStringExtra("image_name");
                 requestData.put("userKey", userKey);
                 requestData.put("requestType", requestType);
                 requestData.put("requestInformation", selectedTimeMain);
+                requestData.put("roomNumber", getIntent().getStringExtra("booking_roomnumber"));
+                requestData.put("hotel", hotel);
                 ref.push().setValue(requestData).addOnCompleteListener(new OnCompleteListener<Void>()  //Pushing the data with respect to oncompletelistener for errors.
                 {
                     @Override
@@ -157,7 +160,11 @@ public class RequestDisturb extends AppCompatActivity
                 {
                     String requestType = (String) user.child("requestType").getValue();
                     String usercurrent = (String) user.child("userKey").getValue();
-                    if(requestType.equals("Do Not Disturb") && usercurrent.equals(userKey))
+                    if(requestType == null)
+                    {
+                        break;
+                    }
+                    else if(requestType.equals("Do Not Disturb") && usercurrent.equals(userKey))
                     {
                         String disturbTime = (String) user.child("requestInformation").getValue();
                         activeInactive.setText("Until " + disturbTime);

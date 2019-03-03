@@ -73,15 +73,20 @@ public class RequestTowels extends AppCompatActivity
             @Override
             public void onClick(View view)
             {
+                String bookingRoomNumber = getIntent().getStringExtra("booking_roomnumber");
+                String hotel = getIntent().getStringExtra("image_name");
                 EditText bathTowel= findViewById(R.id.bathTowelQuantity);
                 EditText faceTowel = findViewById(R.id.faceTowelQuantity);
                 EditText bathMat = findViewById(R.id.bathMatQuantity);
                 EditText handTowel = findViewById(R.id.handTowelQuantity);
+
                 final String towelRequest = "Bath Towels: " + bathTowel.getText() + " Face Towels: " + faceTowel.getText() + " Bath Maths: " + bathMat.getText() + " Hand Towels: " + handTowel.getText();
                 HashMap<String, String> requestData = new HashMap<String, String>(); //Putting data in a hashmap with key and values.
                 requestData.put("userKey", userKey);
                 requestData.put("requestType", requestType);
                 requestData.put("requestInformation",towelRequest);
+                requestData.put("roomNumber", bookingRoomNumber);
+                requestData.put("hotel", hotel);
                 ref.push().setValue(requestData).addOnCompleteListener(new OnCompleteListener<Void>()  //Pushing the data with respect to oncompletelistener for errors.
                 {
                     @Override

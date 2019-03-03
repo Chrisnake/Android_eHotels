@@ -42,8 +42,8 @@ public class BookingPage extends AppCompatActivity
         String QRID = getIntent().getStringExtra("booking_qr");
         String bookingRoomType = getIntent().getStringExtra("booking_roomtype");
         String bookingPrice = getIntent().getStringExtra("booking_price");
-        String bookingRoomNumber = getIntent().getStringExtra("booking_roomnumber");
-
+        final String bookingRoomNumber = getIntent().getStringExtra("booking_roomnumber");
+        final String bookingHotel = getIntent().getStringExtra("image_name");
         getIncomingIntent(bookingIn, bookingOut, QRID, bookingRoomType, bookingPrice, bookingRoomNumber);
         progressBar(bookingIn, bookingOut);
 
@@ -54,6 +54,8 @@ public class BookingPage extends AppCompatActivity
             public void onClick(View view)
             {
                 Intent manageRoom = new Intent(BookingPage.this, YourRoom.class);
+                manageRoom.putExtra("image_name", bookingHotel);
+                manageRoom.putExtra("booking_roomnumber", bookingRoomNumber);
                 startActivity(manageRoom);
             }
         });

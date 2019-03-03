@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,21 +29,18 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 
+import me.relex.circleindicator.CircleIndicator;
+
 public class RequestFoodFix extends AppCompatActivity
 {
     private Context mContext = RequestFoodFix.this;
     private static final int ACTIVITY_NUM = 2;
-    protected ArrayList<String> dessertString;
-    String userKey;
-
+    private Integer[] hotelImages = {R.drawable.hotel_food_1, R.drawable.hotel_food_2, R.drawable.hotel_food_3};
+    private ArrayList<Integer> imagesArray = new ArrayList<Integer>();
+    private String userKey;
+    protected ViewPager viewpager;
+    protected ViewPagerAdapter viewPagerAdapter;
     protected String requestType = "Food";
-    protected String[] Starters = new String[]{"No Starter Selected", "Beans and Toasted Bread: £3.00", "Canarian Potatoes with Mojo: £4.50", "Beef Tapsilog and fried egg: £5.00", "Wedges seasoned with Salt, Pepper and Cumin: £3.50", "Garlic Bread: £2.00", "Chili Nachos with Pulled Pork: £4.00", "Bulalo Beef Soup: £5.00", "Assorted Chicken Wings: £5.00"};
-
-    protected String[] Main = new String[]{"No Main Selected", "Pan Roasted Porkchop w/Potatoes, Vegetables : £10.00", "Duck and Waffle: £11.00", "Indian Curry w/Pata Bread, Basmati Rice: £10.00", "Chinese Style Vegetable Stir Fry: £8.00",
-            "Crispy Pork Belly w/Fried Rice, Spinach: £10.00", "Filipino Chicken Adobo w/Fried Rice: £10.00", "British Sunday Roast w/Potatoes, Vegetables: £10.00", "Beef Spaghetti w/Meatballs, Garlic Bread : £9.50"};
-
-    protected String[] Drinks = new String[]{"No Drinks Selected", "Bottled Mineral Water: £2.00", "Coca Cola Can: £1.00", "Sprite Can: £1.00", "Fanta Fruit Twist Can: £1.00", "Fresh Orange Juice: £2.00", "Fresh Apple Juice: £2.00"};
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -50,35 +48,26 @@ public class RequestFoodFix extends AppCompatActivity
         setContentView(R.layout.activity_request_food_fix);
         setupBottomNavigation();
         getKey();
-        readData(new MyCallback()
-        {
-            @Override
-            public void onCallback(ArrayList<String> dessertArray)
-            {
-                dessertString = dessertArray;
-                Log.i("arraylist", dessertString.get(0) + "");
-            }
-        });
+        slidingImages();
 
         Spinner starter = findViewById(R.id.starterSpinner);
         Spinner main = findViewById(R.id.mainSpinner);
         Spinner dessert = findViewById(R.id.dessertsSpinner);
         Spinner drinks = findViewById(R.id.drinksSpinner);
 
-        ArrayAdapter starterAdapter = new ArrayAdapter(this, R.layout.spinner_item, Starters);
+        ArrayAdapter starterAdapter = new ArrayAdapter(this, R.layout.spinner_item, Food.convertToArray(YourRoom.starterArray));
         starterAdapter.setDropDownViewResource(R.layout.spinner_item);
         starter.setAdapter(starterAdapter);
 
-        ArrayAdapter mainAdapter = new ArrayAdapter(this, R.layout.spinner_item, Main);
+        ArrayAdapter mainAdapter = new ArrayAdapter(this, R.layout.spinner_item, Food.convertToArray(YourRoom.mainArray));
         mainAdapter.setDropDownViewResource(R.layout.spinner_item);
         main.setAdapter(mainAdapter);
 
-        ArrayAdapter dessertsAdapter = new ArrayAdapter(this, R.layout.spinner_item, dessertString);
+        ArrayAdapter dessertsAdapter = new ArrayAdapter(this, R.layout.spinner_item, Food.convertToArray(YourRoom.dessertArray));
         dessertsAdapter.setDropDownViewResource(R.layout.spinner_item);
-        dessertsAdapter.notifyDataSetChanged();
         dessert.setAdapter(dessertsAdapter);
 
-        ArrayAdapter drinksAdapter = new ArrayAdapter(this, R.layout.spinner_item, Drinks);
+        ArrayAdapter drinksAdapter = new ArrayAdapter(this, R.layout.spinner_item, Food.convertToArray(YourRoom.drinksArray));
         drinksAdapter.setDropDownViewResource(R.layout.spinner_item);
         drinks.setAdapter(drinksAdapter);
 
@@ -128,8 +117,9 @@ public class RequestFoodFix extends AppCompatActivity
                 String mainOrder = main.getSelectedItem().toString();
                 String dessertOrder = dessert.getSelectedItem().toString();
                 String drinksOrder = drinks.getSelectedItem().toString();
+                String hotel = getIntent().getStringExtra("image_name");
 
-                if (starterOrder.equals("No Starter Selected")) {
+                if (starterOrder.equals("No Starters Selected")) {
                     starterOrder = "";
                 }
                 if (mainOrder.equals("No Main Selected")) {
@@ -147,6 +137,8 @@ public class RequestFoodFix extends AppCompatActivity
                 requestData.put("userKey", userKey);
                 requestData.put("requestType", requestType);
                 requestData.put("requestInformation", finalOrder);
+                requestData.put("roomNumber", getIntent().getStringExtra("booking_roomnumber"));
+                requestData.put("hotel", hotel);
                 ref.push().setValue(requestData).addOnCompleteListener(new OnCompleteListener<Void>()  //Pushing the data with respect to oncompletelistener for errors.
                 {
                     @Override
@@ -165,38 +157,17 @@ public class RequestFoodFix extends AppCompatActivity
         });
     }
 
-    public interface MyCallback
+    protected void slidingImages()
     {
-        void onCallback(ArrayList<String> array);
-    }
-
-    public void readData(final MyCallback myCallback)
-    {
-        final FirebaseDatabase database = FirebaseDatabase.getInstance(); //Connecting firebase to confirm activity
-        final DatabaseReference ref = database.getReference("RestaurantOrders").child("London Marylebone").child("Dessert");
-        ValueEventListener eventListener = new ValueEventListener()
+        for(int i = 0; i < hotelImages.length; i++)
         {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot)
-            {
-                ArrayList<Food> dessertArray = new ArrayList<>();
-                for (DataSnapshot ds : dataSnapshot.getChildren())
-                {
-                    String dessertName = ds.getKey();
-                    Long dessertValue = (Long) ds.getValue();
-                    Log.i("dessertname", dessertName + "");
-                    Log.i("dessertcost", dessertValue + "");
-                    Food dessert = new Food(dessertName, dessertValue); //Add the type of food and its cost to a Food arraylist.
-                    dessertArray.add(dessert);
-                }
-                myCallback.onCallback(Food.convertToArray(dessertArray));
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError)
-            {
-
-            }
-        };
-        ref.addListenerForSingleValueEvent(eventListener);
+            imagesArray.add(hotelImages[i]);
+        }
+        //Adding viewpager for the swiping hotel images.
+        viewpager = findViewById(R.id.viewPager);
+        viewPagerAdapter = new ViewPagerAdapter(RequestFoodFix.this, imagesArray);
+        viewpager.setAdapter(viewPagerAdapter);
+        CircleIndicator indicator = findViewById(R.id.indicator);
+        indicator.setViewPager(viewpager);
     }
 }

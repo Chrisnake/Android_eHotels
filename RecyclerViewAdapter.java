@@ -15,10 +15,6 @@ import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-/**
- * Created by User on 1/1/2018.
- */
-
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>{
 
     private static final String TAG = "RecyclerViewAdapter";
@@ -82,8 +78,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
-
+    public class ViewHolder extends RecyclerView.ViewHolder
+    {
         CircleImageView image;
         TextView imageName;
         TextView checkinout;
@@ -99,4 +95,3 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         }
     }
 }
-

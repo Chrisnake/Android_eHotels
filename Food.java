@@ -40,7 +40,7 @@ public class Food
         {
             String foodType = foodArray.get(i).getFoodType();
             String foodCost = foodArray.get(i).getFoodCost().toString();
-            finalFood.add(foodType + foodCost);
+            finalFood.add(foodType + ": " + " £" + foodCost);
         }
         return finalFood;
     }

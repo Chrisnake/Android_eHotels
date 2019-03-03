@@ -61,10 +61,14 @@ public class RequestReport extends AppCompatActivity
             @Override
             public void onClick(View view)
             {
+                String bookingRoomNumber = getIntent().getStringExtra("booking_roomnumber");
+                String hotel = getIntent().getStringExtra("image_name");
                 HashMap<String, String> requestData = new HashMap<String, String>(); //Putting data in a hashmap with key and values.
                 requestData.put("userKey", userKey);
                 requestData.put("requestType", requestType);
                 requestData.put("requestInformation",getInformation.getText().toString());
+                requestData.put("roomNumber", bookingRoomNumber);
+                requestData.put("hotel", hotel);
                 ref.push().setValue(requestData).addOnCompleteListener(new OnCompleteListener<Void>()  //Pushing the data with respect to oncompletelistener for errors.
                 {
                     @Override

@@ -62,7 +62,6 @@ public class HomePage extends AppCompatActivity
         });
         updateRoomAvailabilities();
         updateDoNotDisturb();
-        //adddatabase("");
     }
 
     protected void updateRoomAvailabilities() //Goes through all user bookings and reviews if any of the bookings have passed the current date. If they have then add 1 to room availability.
@@ -138,7 +137,11 @@ public class HomePage extends AppCompatActivity
                 for (DataSnapshot user : dataSnapshot.getChildren())
                 {
                     String requestType = (String) user.child("requestType").getValue();
-                    if(requestType.equals("Do Not Disturb"))
+                    if(requestType == null)
+                    {
+                        break;
+                    }
+                    else if(requestType.equals("Do Not Disturb"))
                     {
                         String disturbTime = (String) user.child("requestInformation").getValue();
                         int DisturbTime = Integer.parseInt(disturbTime);
@@ -166,11 +169,11 @@ public class HomePage extends AppCompatActivity
         ref.setValue(UUID.randomUUID().toString());
     }
 
-    protected void adddatabase(String userHotel)
+    protected void adddatabase()
     {
         String id;
         final FirebaseDatabase database = FirebaseDatabase.getInstance(); //Connecting firebase to login activity.
-        final DatabaseReference ref = database.getReference("Rooms").child("London Marylebone");
+        final DatabaseReference ref = database.getReference("Rooms").child("London Westminster");
         for(int i = 1; i < 401; i++)
         {
             id = UUID.randomUUID().toString();

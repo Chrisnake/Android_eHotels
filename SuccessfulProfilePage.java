@@ -14,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -78,9 +79,16 @@ public class SuccessfulProfilePage extends AppCompatActivity
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot)
             {
+                ImageView noBookingsImage = findViewById(R.id.sorry);
+                TextView noBookingsText = findViewById(R.id.noBookings);
                 int i = 0;
                 for (DataSnapshot datas : dataSnapshot.getChildren())
                 {
+                    if(datas.exists())
+                    {
+                        noBookingsImage.setVisibility(View.GONE);
+                        noBookingsText.setVisibility(View.GONE);
+                    }
                     String hotel = (String) datas.child("Hotel").getValue();
                     String price = (String) datas.child("Price").getValue();
                     String dateIn = (String) datas.child("dateIn").getValue();
@@ -95,8 +103,8 @@ public class SuccessfulProfilePage extends AppCompatActivity
                     mImageUrls.add(HashMapImages().get(userBookings.getHotel())); //Using hashmap where the key is the hotel name.
                     mCheckinout.add(dateIn + "   ➜   " + dateOut);
 
-                    Log.i("why", "position " + i + " " + bookingsList.get(i).getDateIn() + " " + bookingsList.get(i).getDateOut() + " ");
-                    Log.i("difference?", "position " + i + " " + dateIn + " " + dateOut + " ");
+                    Log.i("rawdata?", "position " + i + " " + dateIn + " " + dateOut + " ");
+                    Log.i("insidearray", "position " + i + " " + bookingsList.get(i).getDateIn() + " " + bookingsList.get(i).getDateOut() + " ");
                     i++;
                 }
                 initRecyclerView();
