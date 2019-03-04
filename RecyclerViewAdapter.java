@@ -64,8 +64,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 intent.putExtra("booking_roomtype", SuccessfulProfilePage.bookingsList.get(position).getRoomType());
                 intent.putExtra("booking_price", SuccessfulProfilePage.bookingsList.get(position).getPrice());
                 intent.putExtra("booking_roomnumber", SuccessfulProfilePage.bookingsList.get(position).getUserRoomNumber());
-                Log.i("QRID", SuccessfulProfilePage.bookingsList.get(position).getIdQR()+ "hey");
-                Log.i("why2?", "position is " + position + " " + SuccessfulProfilePage.bookingsList.get(position).getDateIn() + " " + SuccessfulProfilePage.bookingsList.get(position).getDateOut() + " ");
                 mContext.startActivity(intent);
             }
         });

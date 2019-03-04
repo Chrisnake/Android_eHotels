@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
-import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.ViewPager;
@@ -27,7 +26,6 @@ import android.widget.DatePicker;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -51,13 +49,15 @@ public class LondonMarylebone extends AppCompatActivity
     protected DatePickerDialog.OnDateSetListener dateSetListener_in;
     protected DatePickerDialog.OnDateSetListener dateSetListener_out;
     protected int dateIn, dateOut, monthIn, monthOut;
-    protected int basePrice = 0;
+    protected long basePrice = 0;
+    protected ArrayList<Long> basePrices;
+    protected double multiplier;
     public String hotel = "London Marylebone";
     public String room = "";
     public String finalCheckIn = "";
     public String finalCheckOut = "";
     public String roomLeft = "";
-    protected int Price = 20;
+    protected double Price = 20;
     protected ViewPager viewpager;
     protected ViewPagerAdapter viewPagerAdapter;
     private Integer[] hotelImages = {R.drawable.london_marylebone_kitchen, R.drawable.london_marylebone, R.drawable.london_marylebone_lobby};
@@ -80,6 +80,7 @@ public class LondonMarylebone extends AppCompatActivity
         setContentView(R.layout.activity_london_marylebone);
         roomList = findViewById(R.id.roomlistView);
         setupBottomNavigation();
+        getbasePrices();
         dateChanger();
         confirmBooking();
         slidingImages();
@@ -119,7 +120,6 @@ public class LondonMarylebone extends AppCompatActivity
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day)
             {
-                Price = basePrice;
                 int daysDifference;
                 month = month + 1; //January starts at 0.
                 monthOut = month;
@@ -136,7 +136,7 @@ public class LondonMarylebone extends AppCompatActivity
                 if(monthOut >= monthIn && dateOut < dateIn)
                 {
                     daysDifference = dateOut + 31 - dateIn;
-                    Price *= daysDifference;
+                    Price = basePrice * daysDifference * multiplier;
                     priceView.setText("£" + Price);
                     Animation animation = AnimationUtils.loadAnimation(LondonMarylebone.this, R.anim.fadein);
                     priceView.setAnimation(animation);
@@ -144,7 +144,7 @@ public class LondonMarylebone extends AppCompatActivity
                 else if(displayInDate != null) //If the user has inputted a check in date.
                 {
                     daysDifference = dateOut - dateIn;
-                    Price *= daysDifference;
+                    Price = basePrice * daysDifference * multiplier;
                     priceView.setText("£" + Price);
                     Animation animation = AnimationUtils.loadAnimation(LondonMarylebone.this, R.anim.fadein);
                     priceView.setAnimation(animation);
@@ -281,23 +281,23 @@ public class LondonMarylebone extends AppCompatActivity
             {
                 switch(i)
                 {
-                    case 0: basePrice = 30; //Single Room Base Price
+                    case 0: basePrice = basePrices.get(4); //Single Room Base Price
                         room = "Single Rooms";
                         roomAvailabilities("Single Rooms");
                         break;
-                    case 1: basePrice = 60; //Single Room Base Price
+                    case 1: basePrice = basePrices.get(1); //Single Room Base Price
                         room = "Double Rooms";
                         roomAvailabilities("Double Rooms");
                         break;
-                    case 2: basePrice = 80; //Family Room Base Price
+                    case 2: basePrice = basePrices.get(2); //Family Room Base Price
                         room = "Family Rooms";
                         roomAvailabilities("Family Rooms");
                         break;
-                    case 3: basePrice = 120; //Large Family Room Base Price
+                    case 3: basePrice = basePrices.get(3); //Large Family Room Base Price
                         room = "Large Family Rooms";
                         roomAvailabilities("Large Family Rooms");
                         break;
-                    case 4: basePrice = 120; //Couple Duplex Room Base Price
+                    case 4: basePrice = basePrices.get(0); //Couple Duplex Room Base Price
                         room = "Couple Duplex Rooms";
                         roomAvailabilities("Couple Duplex Rooms");
                         break;
@@ -325,9 +325,55 @@ public class LondonMarylebone extends AppCompatActivity
                 {
                     bookingValid = true;
                     roomLeft = dataSnapshot.getValue().toString();
+                    updatePrices(Integer.parseInt(roomLeft)); //Update the multiplier depending on the room demand.
                     String roomAvailability = dataSnapshot.getValue().toString() + " " + userRoom + " Available.";
                     Toast toast = Toast.makeText(getApplicationContext(),roomAvailability, Toast.LENGTH_LONG);
                     toast.show();
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError)
+            {
+
+            }
+        });
+    }
+
+    protected void updatePrices(int roomleft)
+    {
+        //Update the multiplier depending on how much room is left.
+        if(roomleft < 10)
+        {
+            multiplier = 1.8;
+        }
+        else if (roomleft < 50)
+        {
+            multiplier = 1.5;
+        }
+        else if (roomleft < 100)
+        {
+            multiplier = 1.25;
+        }
+        else if (roomleft < 201)
+        {
+            multiplier = 1.0;
+        }
+    }
+
+    protected void getbasePrices() //Check firebase Hotels child for hotel room availabilities depending on the hotel the user has clicked. Parameter input is user room that they chose.
+    {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        Query key = reference.child("Prices").child("London Marylebone");
+        key.addListenerForSingleValueEvent(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                basePrices = new ArrayList<>();
+                for (DataSnapshot datas : dataSnapshot.getChildren())
+                {
+                    Long roomBase = (Long) datas.getValue();
+                    basePrices.add(roomBase); //Add the base prices to an arraylist.
                 }
             }
             @Override

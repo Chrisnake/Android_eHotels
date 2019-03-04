@@ -47,19 +47,20 @@ public class LondonHammersmith extends AppCompatActivity
     protected DatePickerDialog.OnDateSetListener dateSetListener_in;
     protected DatePickerDialog.OnDateSetListener dateSetListener_out;
     protected int dateIn, dateOut, monthIn, monthOut;
-    protected int basePrice = 0;
+    protected long basePrice = 0;
     public String hotel = "London Hammersmith";
     public String room = "";
     public String finalCheckIn = "";
     public String finalCheckOut = "";
     public String roomLeft = "";
-    protected int Price = 20;
+    protected double Price = 20;
     protected ViewPager viewpager;
     protected ViewPagerAdapter viewPagerAdapter;
     private Integer[] hotelImages = {R.drawable.london_hammersmith_room, R.drawable.london_hammersmith_lobby, R.drawable.london_hammersmith_bar};
     private ArrayList<Integer> imagesArray = new ArrayList<Integer>();
     protected boolean bookingValid = true;
-
+    protected ArrayList<Long> basePrices = new ArrayList<Long>();
+    protected double multiplier;
 
     private void setupBottomNavigation()
     {
@@ -76,6 +77,7 @@ public class LondonHammersmith extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_london_hammersmith);
         roomList = findViewById(R.id.roomlistView);
+        getbasePrices();
         setupBottomNavigation();
         dateChanger();
         confirmBooking();
@@ -116,7 +118,6 @@ public class LondonHammersmith extends AppCompatActivity
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day)
             {
-                Price = basePrice;
                 int daysDifference;
                 month = month + 1; //January starts at 0.
                 monthOut = month;
@@ -129,10 +130,18 @@ public class LondonHammersmith extends AppCompatActivity
                 displayOutDate.setText(date);
 
                 dateOut = day;
-                if(displayInDate != null) //If the user has inputted a check in date.
+                if(monthOut >= monthIn && dateOut < dateIn)
+                {
+                    daysDifference = dateOut + 31 - dateIn;
+                    Price = basePrice * daysDifference * multiplier;
+                    priceView.setText("£" + Price);
+                    Animation animation = AnimationUtils.loadAnimation(LondonHammersmith.this, R.anim.fadein);
+                    priceView.setAnimation(animation);
+                }
+                else if(displayInDate != null) //If the user has inputted a check in date.
                 {
                     daysDifference = dateOut - dateIn;
-                    Price *= daysDifference;
+                    Price = basePrice * daysDifference * multiplier;
                     priceView.setText("£" + Price);
                     Animation animation = AnimationUtils.loadAnimation(LondonHammersmith.this, R.anim.fadein);
                     priceView.setAnimation(animation);
@@ -197,8 +206,8 @@ public class LondonHammersmith extends AppCompatActivity
                 else if(dateIn <= GregorianCalendar.getInstance().get(Calendar.DAY_OF_MONTH) || monthIn < GregorianCalendar.getInstance().get(Calendar.MONTH))
                 {
                     Toast toast = Toast.makeText(getApplicationContext(),"Error: Please check in after today's date.", Toast.LENGTH_LONG);
-                      toast.show();
-                 }
+                    toast.show();
+                }
                 else if(!room.equals("") && !finalCheckIn.equals("") && !finalCheckOut.equals("")) //Error handling for users that press book without any acceptable details.
                 {
                     Intent ConfirmIntent = new Intent(LondonHammersmith.this, ConfirmBookingPage.class);
@@ -225,7 +234,6 @@ public class LondonHammersmith extends AppCompatActivity
         {
             imagesArray.add(hotelImages[i]);
         }
-
         //Adding viewpager for the swiping hotel images.
         viewpager = findViewById(R.id.viewPager);
         viewPagerAdapter = new ViewPagerAdapter(LondonHammersmith.this, imagesArray);
@@ -236,8 +244,6 @@ public class LondonHammersmith extends AppCompatActivity
 
     protected void hotelLogic()
     {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-
         //Arraylist containing the room types available for the hotel.
         final ArrayList<String> hotelList = new ArrayList<>();
 
@@ -271,23 +277,23 @@ public class LondonHammersmith extends AppCompatActivity
             {
                 switch(i)
                 {
-                    case 0: basePrice = 30; //Single Room Base Price
+                    case 0: basePrice = basePrices.get(4); //Single Room Base Price
                         room = "Single Rooms";
                         roomAvailabilities("Single Rooms");
                         break;
-                    case 1: basePrice = 60; //Single Room Base Price
+                    case 1: basePrice = basePrices.get(1); //Single Room Base Price
                         room = "Double Rooms";
                         roomAvailabilities("Double Rooms");
                         break;
-                    case 2: basePrice = 80; //Family Room Base Price
+                    case 2: basePrice = basePrices.get(2); //Family Room Base Price
                         room = "Family Rooms";
                         roomAvailabilities("Family Rooms");
                         break;
-                    case 3: basePrice = 120; //Large Family Room Base Price
+                    case 3: basePrice = basePrices.get(3); //Large Family Room Base Price
                         room = "Large Family Rooms";
                         roomAvailabilities("Large Family Rooms");
                         break;
-                    case 4: basePrice = 120; //Couple Duplex Room Base Price
+                    case 4: basePrice = basePrices.get(0); //Couple Duplex Room Base Price
                         room = "Couple Duplex Rooms";
                         roomAvailabilities("Couple Duplex Rooms");
                         break;
@@ -315,9 +321,54 @@ public class LondonHammersmith extends AppCompatActivity
                 {
                     bookingValid = true;
                     roomLeft = dataSnapshot.getValue().toString();
+                    updatePrices(Integer.parseInt(roomLeft)); //Update the multiplier depending on the room demand.
                     String roomAvailability = dataSnapshot.getValue().toString() + " " + userRoom + " Available.";
                     Toast toast = Toast.makeText(getApplicationContext(),roomAvailability, Toast.LENGTH_LONG);
                     toast.show();
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError)
+            {
+
+            }
+        });
+    }
+
+    protected void updatePrices(int roomleft)
+    {
+        //Update the multiplier depending on how much room is left.
+        if(roomleft < 10)
+        {
+            multiplier = 1.8;
+        }
+        else if (roomleft < 50)
+        {
+            multiplier = 1.5;
+        }
+        else if (roomleft < 100)
+        {
+            multiplier = 1.25;
+        }
+        else if (roomleft < 201)
+        {
+            multiplier = 1.0;
+        }
+    }
+
+    protected void getbasePrices() //Check firebase Hotels child for hotel room availabilities depending on the hotel the user has clicked. Parameter input is user room that they chose.
+    {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        Query key = reference.child("Prices").child("London Hammersmith");
+        key.addListenerForSingleValueEvent(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                for (DataSnapshot datas : dataSnapshot.getChildren())
+                {
+                    Long roomBase = (Long) datas.getValue();
+                    basePrices.add(roomBase); //Add the base prices to an arraylist.
                 }
             }
             @Override

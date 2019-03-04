@@ -11,6 +11,7 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,12 +37,12 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import me.relex.circleindicator.CircleIndicator;
 
 public class BirminghamCentral extends AppCompatActivity
 {
-
     private Context mContext = BirminghamCentral.this;
     private static final int ACTIVITY_NUM = 1;
     public static ArrayAdapter arrayAdapter;
@@ -50,19 +51,20 @@ public class BirminghamCentral extends AppCompatActivity
     protected DatePickerDialog.OnDateSetListener dateSetListener_in;
     protected DatePickerDialog.OnDateSetListener dateSetListener_out;
     protected int dateIn, dateOut, monthIn, monthOut;
-    protected int basePrice = 0;
+    protected long basePrice = 0;
     public String hotel = "Birmingham Central";
     public String room = "";
     public String finalCheckIn = "";
     public String finalCheckOut = "";
     public String roomLeft = "";
-    protected int Price = 20;
+    protected double Price = 20;
     protected ViewPager viewpager;
     protected ViewPagerAdapter viewPagerAdapter;
     private Integer[] hotelImages = {R.drawable.birmingham_central_room, R.drawable.birmingham_central_kitchen, R.drawable.birmingham_central_toilet};
     private ArrayList<Integer> imagesArray = new ArrayList<Integer>();
     protected boolean bookingValid = true;
-
+    protected ArrayList<Long> basePrices = new ArrayList<Long>();
+    protected double multiplier;
 
     private void setupBottomNavigation()
     {
@@ -79,6 +81,7 @@ public class BirminghamCentral extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_birmingham_central);
         roomList = findViewById(R.id.roomlistView);
+        getbasePrices();
         setupBottomNavigation();
         dateChanger();
         confirmBooking();
@@ -119,7 +122,6 @@ public class BirminghamCentral extends AppCompatActivity
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day)
             {
-                Price = basePrice;
                 int daysDifference;
                 month = month + 1; //January starts at 0.
                 monthOut = month;
@@ -132,10 +134,22 @@ public class BirminghamCentral extends AppCompatActivity
                 displayOutDate.setText(date);
 
                 dateOut = day;
-                if(displayInDate != null) //If the user has inputted a check in date.
+                if(monthOut >= monthIn && dateOut < dateIn)
+                {
+                    daysDifference = dateOut + 31 - dateIn;
+                    Price = basePrice * daysDifference * multiplier;
+                    priceView.setText("£" + Price);
+                    Animation animation = AnimationUtils.loadAnimation(BirminghamCentral.this, R.anim.fadein);
+                    priceView.setAnimation(animation);
+                }
+                else if(displayInDate != null) //If the user has inputted a check in date.
                 {
                     daysDifference = dateOut - dateIn;
-                    Price *= daysDifference;
+                    Price = basePrice * daysDifference * multiplier;
+                    Log.i("price", Price + "");
+                    Log.i("baseprice", basePrice + "");
+                    Log.i("daysdifference", daysDifference + "");
+                    Log.i("multiplier", multiplier + "");
                     priceView.setText("£" + Price);
                     Animation animation = AnimationUtils.loadAnimation(BirminghamCentral.this, R.anim.fadein);
                     priceView.setAnimation(animation);
@@ -197,11 +211,11 @@ public class BirminghamCentral extends AppCompatActivity
                     Toast toast = Toast.makeText(getApplicationContext(),"Error: Please check out at least one day after you check in.", Toast.LENGTH_LONG);
                     toast.show();
                 }
-                // else if(dateIn <= GregorianCalendar.getInstance().get(Calendar.DAY_OF_MONTH) || monthIn < GregorianCalendar.getInstance().get(Calendar.MONTH))
-                // {
-                //    Toast toast = Toast.makeText(getApplicationContext(),"Error: Please check in after today's date.", Toast.LENGTH_LONG);
-                //      toast.show();
-                // }
+                else if(dateIn <= GregorianCalendar.getInstance().get(Calendar.DAY_OF_MONTH) || monthIn < GregorianCalendar.getInstance().get(Calendar.MONTH))
+                {
+                    Toast toast = Toast.makeText(getApplicationContext(),"Error: Please check in after today's date.", Toast.LENGTH_LONG);
+                    toast.show();
+                }
                 else if(!room.equals("") && !finalCheckIn.equals("") && !finalCheckOut.equals("")) //Error handling for users that press book without any acceptable details.
                 {
                     Intent ConfirmIntent = new Intent(BirminghamCentral.this, ConfirmBookingPage.class);
@@ -228,7 +242,6 @@ public class BirminghamCentral extends AppCompatActivity
         {
             imagesArray.add(hotelImages[i]);
         }
-
         //Adding viewpager for the swiping hotel images.
         viewpager = findViewById(R.id.viewPager);
         viewPagerAdapter = new ViewPagerAdapter(BirminghamCentral.this, imagesArray);
@@ -239,8 +252,6 @@ public class BirminghamCentral extends AppCompatActivity
 
     protected void hotelLogic()
     {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-
         //Arraylist containing the room types available for the hotel.
         final ArrayList<String> hotelList = new ArrayList<>();
 
@@ -274,23 +285,23 @@ public class BirminghamCentral extends AppCompatActivity
             {
                 switch(i)
                 {
-                    case 0: basePrice = 30; //Single Room Base Price
+                    case 0: basePrice = basePrices.get(4); //Single Room Base Price
                         room = "Single Rooms";
                         roomAvailabilities("Single Rooms");
                         break;
-                    case 1: basePrice = 60; //Single Room Base Price
+                    case 1: basePrice = basePrices.get(1); //Single Room Base Price
                         room = "Double Rooms";
                         roomAvailabilities("Double Rooms");
                         break;
-                    case 2: basePrice = 80; //Family Room Base Price
+                    case 2: basePrice = basePrices.get(2); //Family Room Base Price
                         room = "Family Rooms";
                         roomAvailabilities("Family Rooms");
                         break;
-                    case 3: basePrice = 120; //Large Family Room Base Price
+                    case 3: basePrice = basePrices.get(3); //Large Family Room Base Price
                         room = "Large Family Rooms";
                         roomAvailabilities("Large Family Rooms");
                         break;
-                    case 4: basePrice = 120; //Couple Duplex Room Base Price
+                    case 4: basePrice = basePrices.get(0); //Couple Duplex Room Base Price
                         room = "Couple Duplex Rooms";
                         roomAvailabilities("Couple Duplex Rooms");
                         break;
@@ -318,9 +329,54 @@ public class BirminghamCentral extends AppCompatActivity
                 {
                     bookingValid = true;
                     roomLeft = dataSnapshot.getValue().toString();
+                    updatePrices(Integer.parseInt(roomLeft)); //Update the multiplier depending on the room demand.
                     String roomAvailability = dataSnapshot.getValue().toString() + " " + userRoom + " Available.";
                     Toast toast = Toast.makeText(getApplicationContext(),roomAvailability, Toast.LENGTH_LONG);
                     toast.show();
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError)
+            {
+
+            }
+        });
+    }
+
+    protected void updatePrices(int roomleft)
+    {
+        //Update the multiplier depending on how much room is left.
+        if(roomleft < 10)
+        {
+            multiplier = 1.8;
+        }
+        else if (roomleft < 50)
+        {
+            multiplier = 1.5;
+        }
+        else if (roomleft < 100)
+        {
+            multiplier = 1.25;
+        }
+        else if (roomleft < 201)
+        {
+            multiplier = 1.0;
+        }
+    }
+
+    protected void getbasePrices() //Check firebase Hotels child for hotel room availabilities depending on the hotel the user has clicked. Parameter input is user room that they chose.
+    {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        Query key = reference.child("Prices").child("Birmingham Central");
+        key.addListenerForSingleValueEvent(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                for (DataSnapshot datas : dataSnapshot.getChildren())
+                {
+                    Long roomBase = (Long) datas.getValue();
+                    basePrices.add(roomBase); //Add the base prices to an arraylist.
                 }
             }
             @Override

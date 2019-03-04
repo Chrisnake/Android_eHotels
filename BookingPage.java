@@ -116,7 +116,6 @@ public class BookingPage extends AppCompatActivity
         }
         else
         {
-            Toast.makeText(BookingPage.this, totalDays + "daysLeft", Toast.LENGTH_SHORT).show();
             ProgressBar progressBar = findViewById(R.id.progressBar);
             progressBar.setMax(totalDays);
             progressBar.setProgress(daysLeft);

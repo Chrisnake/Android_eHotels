@@ -41,7 +41,7 @@ public class SuccessfulProfilePage extends AppCompatActivity
     private ArrayList<String> mNames = new ArrayList<>();
     private ArrayList<String> mImageUrls = new ArrayList<>();
     private ArrayList<String> mCheckinout = new ArrayList<>();
-    public static ArrayList<UserBookings> bookingsList = new ArrayList<>();
+    public static ArrayList<UserBookings> bookingsList;
     public static String userKey;
 
     private void setupBottomNavigation()
@@ -79,9 +79,10 @@ public class SuccessfulProfilePage extends AppCompatActivity
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot)
             {
+                int i = 0;
                 ImageView noBookingsImage = findViewById(R.id.sorry);
                 TextView noBookingsText = findViewById(R.id.noBookings);
-                int i = 0;
+                bookingsList = new ArrayList<>();
                 for (DataSnapshot datas : dataSnapshot.getChildren())
                 {
                     if(datas.exists())

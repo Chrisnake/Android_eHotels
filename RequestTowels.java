@@ -63,48 +63,47 @@ public class RequestTowels extends AppCompatActivity
         menuItem.setChecked(true);
     }
 
-    protected void updateTowels()
-    {
+    protected void updateTowels() {
         final FirebaseDatabase database = FirebaseDatabase.getInstance(); //Connecting firebase to confirm activity.
         final DatabaseReference ref = database.getReference("Requests");
         Button confirm = findViewById(R.id.towelsButton);
-        confirm.setOnClickListener(new View.OnClickListener()
-        {
+        confirm.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
+            public void onClick(View view) {
                 String bookingRoomNumber = getIntent().getStringExtra("booking_roomnumber");
                 String hotel = getIntent().getStringExtra("image_name");
-                EditText bathTowel= findViewById(R.id.bathTowelQuantity);
+                EditText bathTowel = findViewById(R.id.bathTowelQuantity);
                 EditText faceTowel = findViewById(R.id.faceTowelQuantity);
                 EditText bathMat = findViewById(R.id.bathMatQuantity);
                 EditText handTowel = findViewById(R.id.handTowelQuantity);
 
-                final String towelRequest = "Bath Towels: " + bathTowel.getText() + " Face Towels: " + faceTowel.getText() + " Bath Maths: " + bathMat.getText() + " Hand Towels: " + handTowel.getText();
-                HashMap<String, String> requestData = new HashMap<String, String>(); //Putting data in a hashmap with key and values.
-                requestData.put("userKey", userKey);
-                requestData.put("requestType", requestType);
-                requestData.put("requestInformation",towelRequest);
-                requestData.put("roomNumber", bookingRoomNumber);
-                requestData.put("hotel", hotel);
-                ref.push().setValue(requestData).addOnCompleteListener(new OnCompleteListener<Void>()  //Pushing the data with respect to oncompletelistener for errors.
+                if (Integer.parseInt(bathTowel.getText().toString()) > 5 || Integer.parseInt(faceTowel.getText().toString()) > 5 || Integer.parseInt(bathMat.getText().toString()) > 5 || Integer.parseInt(handTowel.getText().toString()) > 5)
                 {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task)
+                    Toast.makeText(RequestTowels.this, "Sorry, but you have requested too many towels. 5 is the most you can request for.", Toast.LENGTH_LONG).show();
+                }
+                else {
+                    final String towelRequest = "Bath Towels: " + bathTowel.getText() + " Face Towels: " + faceTowel.getText() + " Bath Maths: " + bathMat.getText() + " Hand Towels: " + handTowel.getText();
+                    HashMap<String, String> requestData = new HashMap<String, String>(); //Putting data in a hashmap with key and values.
+                    requestData.put("userKey", userKey);
+                    requestData.put("requestType", requestType);
+                    requestData.put("requestInformation", towelRequest);
+                    requestData.put("roomNumber", bookingRoomNumber);
+                    requestData.put("hotel", hotel);
+                    ref.push().setValue(requestData).addOnCompleteListener(new OnCompleteListener<Void>()  //Pushing the data with respect to oncompletelistener for errors.
                     {
-                        if(task.isSuccessful())
-                        {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
 
+                            } else {
+                                Toast.makeText(RequestTowels.this, "Oops, please contact user support...", Toast.LENGTH_SHORT).show();
+                            }
                         }
-                        else
-                        {
-                            Toast.makeText(RequestTowels.this, "Oops, please contact user support...", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-                Intent ConfirmIntent = new Intent(RequestTowels.this, RequestConfirmed.class);
-                ConfirmIntent.putExtra("request_type", "Your " + requestType);
-                startActivity(ConfirmIntent);
+                    });
+                    Intent ConfirmIntent = new Intent(RequestTowels.this, RequestConfirmed.class);
+                    ConfirmIntent.putExtra("request_type", "Your " + requestType);
+                    startActivity(ConfirmIntent);
+                }
             }
         });
     }
